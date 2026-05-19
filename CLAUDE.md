@@ -84,4 +84,9 @@ order; the handout (`main.tex`) is the authoritative walkthrough.
 Keep commit messages to a single short line unless the user explicitly
 asks for a longer body. No multi-line summaries, no bullet lists.
 
+When the user invokes `/commit` (or asks to commit) in this repo, run
+the commit directly — do not pause to print the proposed message and
+ask for confirmation. Still do the code review step; just skip the
+"Commit with this message? (yes / edit / abort)" prompt.
+
 After every commit, push to origin immediately (`git push`).
