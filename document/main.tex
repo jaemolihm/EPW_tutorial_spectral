@@ -1,0 +1,1621 @@
+\documentclass[a4paper,11pt,serif]{article}
+
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usepackage{float}
+\usepackage{fancyvrb}
+\usepackage{amsmath}
+
+
+\input{settings}
+
+\newcommand{\Eq}[1]{{Eq.~\eqref{#1}}}
+\newcommand{\mb}[1]{\mathbf{#1}}
+\newcommand{\todo}[1]{{ \color{red}{[\small \textbf{{TODO}:} \textit{#1}]} }}
+\newcommand{\qnu}[0]{{\mb{q}\nu}}
+
+
+
+\begin{document}
+
+.\vspace{-0.97cm} %. is a trick to not have the header here!
+\begin{tcolorbox}[width=\textwidth,colback=yellow!20,title={},colupper=black,
+colframe=black,toprule=1.2pt,bottomrule=1.2pt,leftrule=1.2pt,rightrule=1.2pt,arc=0pt,outer arc=0pt]
+\vspace{0.1cm}
+{\color{blue2} \center \bf\large 2026 School on Electron-Phonon Physics and Many-Body perturbation theory}
+\center\Large Electron and phonon spectral functions\vspace{-0.2cm}
+\center{\color{blue2} \bf\large Hands-on Session (Thu.5)}
+\vspace{0.1cm}
+\end{tcolorbox}
+\vspace{-0.4cm}
+\begin{flushright}
+\footnotesize Hands-on based on \texttt{Quantum ESPRESSO} (v7.6) and \texttt{EPW} v6.1
+\end{flushright}
+
+
+
+\section*{Introduction}
+
+In this tutorial, we show how to compute the phonon-induced renormalization of electron band structure of diamond within the Allen--Heine--Cardona theory\footnote{P.\ B.\ Allen and V.\ Heine, \href{https://iopscience.iop.org/article/10.1088/0022-3719/9/12/013}{J.\ Phys.\ C, \textbf{9}, 2305 (1976)}, P.\ B.\ Allen and M.\ Cardona, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.23.1495}{Phys.\ Rev.\ B, \textbf{23}, 1495 (1981)}}
+using Wannier Function perturbation theory (WFPT)\footnote{J.-M.\ Lihm and C.-H.\ Park, \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.11.041053}{Phys.\ Rev.\ X \textbf{11}, 041053 (2021)}},
+and the electron and phonon spectral functions of MgB$_2$.
+
+
+You are advised to prepare the following script file, e.g. \texttt{run.sh}:
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                  run.sh
+#!/bin/bash
+#SBATCH -J job.ph # Job name
+#SBATCH -N 1 # Total # of nodes
+#SBATCH --ntasks-per-node 8
+#SBATCH -t 00:15:00 # Run time (hh:mm:ss)
+#SBATCH -A DMR23030
+#SBATCH -p skx
+#SBATCH --reservation=NSF_Summer_School_Sat
+
+# Launch MPI code...
+export PATHQE=/work2/05193/sabyadk/stampede3/EPWSchool2024/q-e
+
+ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
+ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ph.in > ph.out
+\end{Verbatim}
+\end{scriptsize}
+
+
+\section*{Exercise 1: Zero-point renormalization and temperature-dependent band gap of diamond}
+
+\subsection*{1.1 Theory}
+In this example we calculate the phonon-induced band gap renormalization of diamond.
+In the Allen--Heine--Cardona (AHC) formalism$^{1}$, the phonon-induced renormalization of electron eigenvalue is determined by the real part of the electron self-energy, which is the sum of the Fan and the Debye--Waller (DW) terms:
+\begin{equation}
+   \Sigma_{n\mb{k}} = \Sigma^{\rm Fan}_{n\mb{k}} + \Sigma^{\rm DW}_{n\mb{k}}.
+\end{equation}
+
+
+\vspace{0.5cm}
+The non-adiabatic Fan term comes from the second-order perturbative correction due to the linear electron-phonon coupling parameter and is given by\footnote{S.\ Ponc\'e \textit{et al}., \href{https://pubs.aip.org/aip/jcp/article-abstract/143/10/102813/898920/Temperature-dependence-of-the-electronic-structure?redirectedFrom=fulltext}{J.\ Chem.\ Phys.\ \textbf{143}, 102813 (2015)}}:
+\begin{equation}
+   \Sigma^{\rm Fan}_{n\mb{k}} = \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \sum_{m\nu} | g_{mn\nu}(\mb{k,q})|^2
+   \sum_{\pm} \frac{n_{\mb{q}\nu} + f_{m\mb{k}+\mb{q}}^\pm}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\mb{q}\nu} + i\eta},
+\end{equation}
+where $f_{m\mb{k}+\mb{q}}^+$ is the Fermi--Dirac occupation factor of the state with energy $\varepsilon_{m\mb{k}+\mb{q}}$, $f_{m\mb{k}+\mb{q}}^- = 1 - f_{m\mb{k}+\mb{q}}^+$, and $\eta$ a positive infinitesimal value (\texttt{degaussw}).
+This expression contains an infinite sum over bands $m$ which cannot be computed using Wannier interpolation of low-energy bands.
+
+
+To solve this problem, we use Wannier function perturbation theory (WFPT).
+We begin by splitting the Fan term into the low-energy active space contribution ($\Sigma^{\rm A-Fan}$) and the rest space contribution ($\Sigma^{\rm R-Fan}$) separated by the cutoff energy $E^{\rm A}$:
+\begin{align}
+   \label{eq:fan_active}
+   \Sigma^{\rm A-Fan}_{n\mb{k}}
+   &= \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} \leq E^{\rm A}}} \sum_{\nu} | g_{mn\nu}(\mb{k,q})|^2
+   \sum_{\pm} \frac{n_{\mb{q}\nu} + f_{m\mb{k}+\mb{q}}^\pm}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\mb{q}\nu} + i\eta},
+   \\
+   \label{eq:fan_rest}
+   \Sigma^{\rm R-Fan}_{n\mb{k}}
+   &= \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} > E^{\rm A}}} \sum_{\nu} | g_{mn\nu}(\mb{k,q})|^2
+   \frac{2n_{\mb{q}\nu} + 1}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\mb{q}\nu} + i\eta}.
+\end{align}
+In Eq.~\eqref{eq:fan_rest}, we assumed that the cutoff energy is much higher than the Fermi level such that the electron occupation is always zero above the window.
+For states $n\mb{k}$ within the active space, $\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}}$ in the denominator of Eq.~\eqref{eq:fan_rest} is never zero.
+Assuming this electronic energy difference is much larger than the phonon frequency, we can drop the phonon frequency and approximate the rest term as
+\begin{equation} \label{eq:fan_rest_adia}
+   \Sigma^{\rm R-Fan}_{n\mb{k}} \approx \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \sum_{\nu} (2n_{\mb{q}\nu} + 1) \!\!\!\!
+   \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} > E^{\rm A}}} \frac{| g_{mn\nu}(\mb{k,q})|^2}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}}}.
+\end{equation}
+In practice, $E^{\rm A}$ (\texttt{ahc\_win\_max}) is a convergence parameter that needs to be increased until the result is converged.
+Usually, 1~eV above the highest band of interest is sufficient.
+
+
+The infinite sum over the high-energy bands in Eq.~\eqref{eq:fan_rest_adia} can be rewritten as\footnote{X.\ Gonze \textit{et al}., \href{https://onlinelibrary.wiley.com/doi/10.1002/andp.201000100}{Ann. Phys. 523, 168 (2011)}}
+\begin{equation} \label{eq:sternheimer_mel}
+   \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} > E^{\rm A}}} \frac{| g_{mn\nu}(\mb{k,q})|^2}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}}}
+   = \langle \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} | \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle,
+\end{equation}
+where $| \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle$ is the first-order perturbation of the electron wavefunction projected onto the high-energy subspace, which can be computed by solving the Sternheimer equation
+\begin{equation} \label{eq:sternheimer}
+   (\varepsilon_{n\mb{k}} - \hat{H}_{\mb{k}+\mb{q}}) | \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle
+   =  \hat{P}^{\rm R}_{\mb{k+q}} \,  \partial_{\mb{q}\nu} \hat{V} | u_{n\mb{k}} \rangle.
+\end{equation}
+Here, $\hat{P}^{\rm R}_{\mb{k+q}}$ is the projector onto the high-energy bands.
+
+
+Using WFPT, the wavefunction perturbation $| \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle$ can be represented in terms of localized objects.
+These objects are called ``Wannier function perturbations'', as they are the change of Wannier functions due to a phonon perturbation.
+Correspoingly, the matrix element on the right-hand side of \Eq{eq:sternheimer_mel} can be Wannier interpolated from a coarse $\mb{k}$-point grid to real space, and then to a dense $\mb{k}$-point grid.
+More information about WFPT can be found in the article \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.11.041053}{J.\ M.\ Lihm and C.\ H.\ Park, Phys. Rev. X \textbf{11}, 041053 (2021)}.
+
+
+
+\vspace{0.5cm}
+The DW term comes from the first-order perturbative correction due to the quadratic electron-phonon coupling parameter $D_{n\nu}(\mb{k,q})$:
+\begin{equation}
+   \Sigma^{\rm DW}_{n\mb{k}} = \sum_{m\nu} \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \frac{n_{\mb{q}\nu} + 1/2}{2\omega_{\mb{q}\nu}} D_{n\nu}(\mb{k,q}).
+\end{equation}
+The $D_{n\nu}(\mb{k,q})$ term, which is called the DW matrix element, is defined as:
+\begin{equation}
+   D_{n\nu}(\mb{k,q}) = \sum_{\kappa\kappa'\alpha\alpha'} e^*_{\kappa\alpha\nu}(\mb{q}) e_{\kappa'\alpha'\nu}(\mb{q})
+   \langle u_{n\mb{k}} | \partial_{-\mb{q}\kappa\alpha} \partial_{\mb{q}\kappa'\alpha'} \hat{V} | u_{n\mb{k}} \rangle.
+\end{equation}
+This term cannot be directly evaluated within first-order DFPT because it involves the second derivative of the electronic potential with respect to atomic displacements.
+Using the rigid-ion approximation which neglects the cross-derivatives between different atoms, and exploiting the translational covariance of the electron potential, the DW matrix element can be expressed as\footnote{J.-M.\ Lihm and C.-H.\ Park, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.101.121102}{Phys.\ Rev.\ B \textbf{101}, 121102(R) (2020)}}
+\begin{equation}
+   \langle u_{n\mb{k}} | \partial_{-\mb{q}\kappa\alpha} \partial_{\mb{q}\kappa'\alpha'} \hat{V} | u_{n\mb{k}} \rangle
+   \stackrel{\rm RIA}{\approx}
+   i \delta_{\kappa\kappa'} \langle u_{n\mb{k}} | [\partial_{\mb{0}\kappa\alpha} \hat{V}, \hat{p}_{\alpha'}] | u_{n\mb{k}}\rangle,
+\end{equation}
+where $\hat{p}_{\alpha'} = -i \partial / \partial r_{\alpha'}$ is the momentum operator in the direction $\alpha'$.
+Therefore, in the RIA, the DW self-energy takes the following explicit form:
+\begin{equation}
+   \Sigma^{\rm DW}_{n\mb{k}}
+   \stackrel{\rm RIA}{\approx}
+   \sum_{m\nu} \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \frac{n_{\mb{q}\nu} + 1/2}{2\omega_{\mb{q}\nu}}
+   \sum_{\kappa\alpha\alpha'} e^*_{\kappa\alpha\nu}(\mb{q}) e_{\kappa\alpha'\nu}(\mb{q})
+   \langle u_{n\mb{k}} | [\partial_{\mb{0}\kappa\alpha} \hat{V}, \hat{p}_{\alpha'}] | u_{n\mb{k}} \rangle\,.
+\end{equation}
+Note the $\kappa$, the atomic index, is the same for the two eigenmodes as the RIA neglects inter-atomic cross-derivatives.
+% More information can be found in the article \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.101.121102}{Phys. Rev. B \textbf{101}, 121102(R) (2020)}.
+
+
+
+\vspace{0.5cm}
+
+
+\subsection*{1.2 Preliminary calculations with Quantum Espresso}
+
+First download the exercise files:
+\begin{scriptsize}
+\begin{verbatim}
+$ cd $SCRATCH
+$ cp /work2/05193/sabyadk/stampede3/EPWSchool2024/tutorials/Sat.5.Lihm.tar .
+$ tar -xvf Sat.5.Lihm.tar
+$ cd Sat.5.Lihm/exercise1/
+\end{verbatim}
+\end{scriptsize}
+
+
+% ------------------------------------------------
+\action Make a self-consistent calculation for diamond.
+
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+--                                                                                                  scf.in
+&control
+   calculation  = 'scf'
+   prefix       = 'diamond'
+   pseudo_dir   = './'
+   outdir       = './'
+/
+&system
+   ibrav     = 2
+   celldm(1) = 6.74
+   nat       = 2
+   ntyp      = 1
+   ecutwfc   = 40.0
+/
+&electrons
+   diagonalization = 'david'
+   mixing_beta     = 0.7
+   conv_thr        = 1.0d-13
+/
+ATOMIC_SPECIES
+  C  12.011   C.pz-vbc.UPF
+ATOMIC_POSITIONS crystal
+  C  0.125   0.125   0.125
+  C -0.125  -0.125  -0.125
+K_POINTS automatic
+ 8 8 8 0 0 0
+\end{Verbatim}
+\end{scriptsize}
+\begin{footnotesize}
+   {\bf Note}: In practice the \textbf{k}-point grid needs to be fairly large in order to get converged dielectric function and Born effective charges during the following phonon calculation. (Here, the Born effective charges are 0 as diamond is infrared inactive.)
+\end{footnotesize}
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
+\end{verbatim}
+
+% ------------------------------------------------
+\vspace{0.5cm}
+\action Compute the vibrational properties of c-BN on a coarse 4x4x4 $\bf{q}$-point grid.
+
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                  ph.in
+&inputph
+   prefix    = 'diamond'
+   reduce_io = .true.
+   epsil     = .true.
+   fildyn    = 'diamond.dyn.xml'
+   ldisp     = .true.
+   fildvscf  = 'dvscf'
+   tr2_ph    = 1.d-20
+   nmix_ph   = 12
+   nq1 = 4
+   nq2 = 4
+   nq3 = 4
+   /
+\end{Verbatim}
+\end{scriptsize}
+\begin{footnotesize}
+   \textbf{Note}: We have the input variable \texttt{reduce\_io = .true.} which reduces the I/O operations at the cost of higher memory usage.
+
+   \textbf{Note 2}: If you add \texttt{.xml} after the name of the dynamical matrix file, it will
+   produce the data in XML format (preferred).
+
+   \textbf{Note 3}: The input variable responsible to produce the electron-phonon matrix element is \program{fildvscf}. Always make sure that this variable is present.
+
+   \textbf{Note 4}: Notice the very tight \program{tr2\_ph} threshold parameter on the self-consistent first-order perturbed wavefunction. This is crucial to obtain good vibrational properties.
+
+   \textbf{Note 5}: The input variable \texttt{nmix\_ph = 12} improves the convergence of the self-consistent DFPT at the cost of a small increase in memory usage, compared to the default of \texttt{nmix\_ph = 4}.
+\end{footnotesize}
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 ph.in > ph.out
+\end{verbatim}
+
+The calculation should take about 1 min on 8 cores.
+
+% ------------------------------------------------
+\vspace{0.5cm}
+\action Run the python post-processing to create the \texttt{save} folder
+\begin{verbatim}
+$ python3 $PATHQE/EPW/bin/pp.py
+\end{verbatim}
+The script will ask you to enter the prefix used for the calculation. In this case enter ``diamond''.
+%
+The script will create a new folder called ``save'' that contains the dvscf potential files, pattern files, and dynamical
+matrices on the IBZ.
+
+
+% -----------------------------------------------------------------------------------------
+\subsection*{1.3 Interpolation of the electron-phonon matrix element in real-space with EPW}
+\vspace{0.5cm}
+\action Do a non self-consistent calculation on a 4x4x4 uniform and $\Gamma$-centered $\mb{k}$-point grid with crystal coordinates in the interval [0,1)
+
+Such a grid can be for example generated with the \texttt{wannier90} utility with \texttt{kmesh.pl 4 4 4}.
+
+
+The \texttt{nscf.in} file is as follows:
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                nscf.in
+&control
+      calculation  = 'bands'
+      prefix       = 'diamond'
+      pseudo_dir   = './'
+      outdir       = './'
+/
+&system
+      ibrav     = 2
+      celldm(1) = 6.74
+      nat       = 2
+      ntyp      = 1
+      ecutwfc   = 40.0
+      nbnd      = 8
+/
+&electrons
+      conv_thr = 1.d-12
+/
+ATOMIC_SPECIES
+   C  12.011   C.pz-vbc.UPF
+ATOMIC_POSITIONS crystal
+   C  0.125   0.125   0.125
+   C -0.125  -0.125  -0.125
+K_POINTS crystal
+64
+   0.000000000000  0.000000000000  0.000000000000  1.56250000e-02
+   0.000000000000  0.000000000000  0.250000000000  1.56250000e-02
+   0.000000000000  0.000000000000  0.500000000000  1.56250000e-02
+...
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in nscf.in > nscf.out
+\end{verbatim}
+
+The reason for the non-self consistent calculation is that EPW needs the wavefunctions on the full BZ on a grid between 0 and 1.
+
+\vspace{0.5cm}
+\begin{footnotesize}
+   \textbf{Note 1}: Since we are interested in the band gap, we will need the conduction bands. Notice that we added the
+input \texttt{nbnd = 8} in \texttt{nscf.in}
+
+   \textbf{Note 2}: We use \texttt{calculation  = `bands'} instead of \texttt{calculation  = `nscf'}. This is because the latter option may expand the set of $\mb{k}$-points according to the symmetry, while the former always computes the eigenenergies and wavefunctions for the given set of $\mb{k}$-points.
+\end{footnotesize}
+
+
+% ------------------------------------------------
+\vspace{0.5cm}
+\action Compute the matrix elements for the DW and rest-space Fan self-energy on the coarse $\mb{k}$-point grid
+
+For WFPT, we need matrix elements for the DW and rest-space Fan self-energy on the coarse $\mb{k}$-point grid.
+To compute these, we use the \texttt{electron\_phonon = `ahc'} option of the \program{ph.x} code.
+
+
+The \texttt{ahc.in} file is as follows:
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                 ahc.in
+&inputph
+  prefix    = 'diamond'
+  reduce_io = .true.
+  epsil     = .true.
+  fildyn    = 'diamond_ahc.dyn.xml'
+  ldisp     = .true.
+  fildvscf  = 'dvscf'
+  nq1 = 4
+  nq2 = 4
+  nq3 = 4
+
+  ! Input variables for Allen-Heine-Cardona calculation
+  electron_phonon = 'ahc'
+  trans           = .false.
+  ahc_nbnd        = 8
+  ahc_dir         = './save/ahc_dir/'
+ /
+\end{Verbatim}
+\end{scriptsize}
+There are four new input variables specific to the AHC calculation:
+
+\begin{footnotesize}
+   \textbf{Note 1}: \texttt{electron\_phonon = `ahc'} enables the calculation of the Sternheimer and DW matrix elements.
+
+   \textbf{Note 2}: \texttt{trans = .false.} disables the computation of phonons, as the phonon potential will be read from file.
+
+   \textbf{Note 3}: \texttt{ahc\_nbnd = 8} specifies the number of bands to be considered in the calculation of the matrix elements.
+
+   \textbf{Note 4}: \texttt{ahc\_dir = `./save/ahc\_dir/'} specifies the directory where the matrix elements will be stored.
+\end{footnotesize}
+
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ahc.in > ahc.out
+\end{verbatim}
+
+
+% ------------------------------------------------
+\vspace{0.5cm}
+\action Perform an \texttt{EPW} calculation to Fourier-transform the electron-phonon matrix element from a coarse 4x4x4 $\mb{k}$ and $\mb{q}$-point grids to real space and then interpolate the electronic band structure and phononic dispersion along the $L-\Gamma-X-K-\Gamma$ high symmetry line by reading the file \texttt{LGXKG.txt}.
+
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                 epw.in
+&inputepw
+  prefix      = 'diamond'
+  amass(1)    = 12.011
+  outdir      = './'
+  dvscf_dir   = './save/'
+  elph        = .true.
+  etf_mem     = 0
+  lopt_w2b    = .true.
+
+  ! --- Input variables for WFPT ---
+  lwfpt       = .true.
+  ahc_nbnd    = 8
+  ahc_win_max = 23.0
+  ahc_win_min = -100.0
+
+  ! --- Input variables for electron self-energy ---
+  elecselfen = .true.
+  filkf      = './kpt.txt'
+  nqf1       = 10
+  nqf2       = 10
+  nqf3       = 10
+  degaussw   = 0.02  ! eV
+  temps      = 0.0   ! Kelvin
+  ! ------------------------------------------------
+
+  efermi_read = .true.
+  fermi_energy = 15.0
+
+  use_ws = .true.
+  lpolar = .true.
+  vme    = 'wannier'
+
+  ! For the first-time, perform Wannierization of the electrons
+  ! and the electron-phonon matrix elements
+  wannierize = .true.
+  epbwrite = .true.
+  epwwrite = .true.
+
+  ! To restart from the real-space matrix elements
+  !wannierize = .false.
+  !epwread = .true.
+
+  nbndsub     = 8
+  num_iter    = 200
+  proj(1)     = 'C:sp3'
+  wdata(1)    = 'conv_tol = 1.d-10'
+  wdata(2)    = 'conv_window = 5'
+
+  nk1         = 4
+  nk2         = 4
+  nk3         = 4
+
+  nq1         = 4
+  nq2         = 4
+  nq3         = 4
+ /
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw.in > epw.out
+\end{verbatim}
+
+\begin{footnotesize}
+{\bf Notes}:
+\begin{itemize}
+   \item We set \texttt{etf\_mem = 0} to minimize the number of IO operations. For larger systems where memory becomes a concern, you can set \texttt{etf\_mem = 1}.
+   \item \texttt{lopt\_w2b = .true.} enables the optimization of the Wannier interpolation that reduces a 3D Fourier transformation to a nested 1D Fourier transformation with cached intermediate results. This option can significantly improve performance \textit{without} compromising any accuracy when using homogeneous $\mb{q}$-point grids. See Eqs.~(8,9) of J.\ Kaye \textit{et al}., \href{https://scipost.org/SciPostPhys.15.2.062}{SciPost Phys. 15, 062 (2023)}.
+   \item \texttt{lwfpt} enables WFPT.
+   \item \texttt{ahc\_nbnd} specifies the number of bands for which the Sternheimer matrix element is computed. This number should be the same as in the \texttt{ahc.in} file.
+   \item \texttt{ahc\_win\_min} and \texttt{ahc\_win\_max} specifies the lower and upper boundaries of the active space.
+   \item \texttt{elecselfen} asks for the electron self-energy to be computed.
+   \item \texttt{degaussw = 0.02} specifies the smearing parameter $\eta$ in the units of eV.
+   \item \texttt{temps} define the lattice temperature at which the self-energy is evaluated.
+   \item The code should have detected the presence of the \texttt{quadrupole.fmt} file and correclty read the quadrupole tensor. Look in the output for the line \texttt{Quadrupole tensor is correctly read}.
+   \item If you run the code for the second time, you can skip Wannierization and the calculation of the real-space electron-phonon matrix elements by uncommenting the lines \texttt{wannierize = .false.} and \texttt{epwread = .true.}, and commenting out the three lines above them, \texttt{wannierize = .true.}, \texttt{epbwrite = .true.}, and \texttt{epwwrite = .true.}.
+\end{itemize}
+\end{footnotesize}
+
+\vspace{0.5cm}
+
+The calculation should take less than 2 min.
+The fine $\mb{q}$ point grids need to be much denser for real calculations.
+However, we can already get relatively decent results.
+
+\vspace{0.2cm}
+In the output you will see the line `\texttt{ik =       1 coord.:    0.0000000   0.0000000   0.0000000}'.
+The data following this line show the real and imaginary parts of the electron self-energy. (Note that below we have trimmed some digits for brevity. The actual output has more digits printed.)
+The real part is the total electron band structure renormalization, which is the sum of the active space Fan, rest space Fan, and DW terms.
+From the underlined numbers, we find that the renormalization of the valence band maxima (VBM), lowest conduction band at $\mb{k}=\Gamma$, and conduction band minima (CBM) are 124.73, -350.68, and -167.00 meV, respectively.
+{\color{cverb}\footnotesize
+\begin{Verbatim}[commandchars=\\\{\}]
+ik =       1 coord.:    0.0000000   0.0000000   0.0000000
+-------------------------------------------------------------------
+E(   1 )=  -23.097318 eV   Re[Sigma]= -0.64319...E+02 meV Im[Sigma]=  0.59261...E+00 meV     Z= ...
+E(   2 )=   -1.641768 eV   Re[Sigma]=  0.12473...E+03 meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
+E(   3 )=   -1.641768 eV   Re[Sigma]=  0.12473...E+03 meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
+E(   4 )=   -1.641768 eV   Re[Sigma]=  \underline{0.12473...E+03} meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
+E(   5 )=    4.020640 eV   Re[Sigma]= \underline{-0.35068...E+03} meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
+E(   6 )=    4.020640 eV   Re[Sigma]= -0.35068...E+03 meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
+E(   7 )=    4.020640 eV   Re[Sigma]= -0.35068...E+03 meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
+E(   8 )=   11.517629 eV   Re[Sigma]=  0.00000...E+00 meV Im[Sigma]=  0.24628...E+00 meV     Z= ...
+-------------------------------------------------------------------
+
+
+ik =       2 coord.:    0.3500000   0.0000000   0.3500000
+-------------------------------------------------------------------
+E(   1 )=  -18.740849 eV   Re[Sigma]= -0.74350...E+01 meV Im[Sigma]=  0.33020...E+02 meV     Z=  ...
+E(   2 )=   -9.321123 eV   Re[Sigma]= -0.38989...E+01 meV Im[Sigma]=  0.71024...E+02 meV     Z=  ...
+E(   3 )=   -7.102523 eV   Re[Sigma]= -0.55960...E+01 meV Im[Sigma]=  0.13225...E+03 meV     Z=  ...
+E(   4 )=   -7.102523 eV   Re[Sigma]= -0.55960...E+01 meV Im[Sigma]=  0.13225...E+03 meV     Z=  ...
+E(   5 )=    2.239900 eV   Re[Sigma]= \underline{-0.16700...E+03} meV Im[Sigma]=  0.11050...E+01 meV     Z=  ...
+E(   6 )=    5.097206 eV   Re[Sigma]= -0.14679...E+03 meV Im[Sigma]=  0.21412...E+03 meV     Z=  ...
+E(   7 )=   13.403539 eV   Re[Sigma]=  0.00000...E+00 meV Im[Sigma]=  0.21549...E+00 meV     Z=  ...
+E(   8 )=   13.403539 eV   Re[Sigma]=  0.00000...E+00 meV Im[Sigma]=  0.21549...E+00 meV     Z=  ...
+-------------------------------------------------------------------
+\end{Verbatim}
+}
+
+
+\vspace{0.2cm}
+A more detailed analysis of the electron self-energy can be found in the file \texttt{elself\_wfpt\_sup.0.000K}.
+Each of the column shows the contribution of each electron self-energy term: active-space Fan (Eq.~\eqref{eq:fan_active}), active-space DW, rest-space Fan (Eq.~\eqref{eq:fan_rest}), and rest-space DW.
+One can find that the rest-space Fan and DW terms have large values with opposite signs.
+(Again, we have removed some digits for brevity.)
+
+{\color{cverb}\footnotesize
+\begin{Verbatim}[commandchars=\\\{\}]
+# Electron self-energy (meV) in the Allen-Heine-Cardona formalism at T = 0.000K
+#   ik  ibnd    E_nk (eV)  Re[Active_Fan]  Active_DW  Rest_Fan    Rest_DW      Im[Active_Fan] (meV)
+     1     1 -0.80973E+01 -0.71604E+02  0.87182E+01 -0.10433E+03  0.10289E+03  0.59261E+00
+     2     1 -0.37408E+01 -0.50846E+01  0.58749E+01 -0.19203E+03  0.18380E+03  0.33020E+02
+
+     1     2  0.13358E+02  0.97221E+02  0.28803E+02 -0.10153E+04  0.10140E+04  0.13815E+01
+     2     2  0.56788E+01 -0.10493E+02  0.16287E+02 -0.48840E+03  0.47871E+03  0.71024E+02
+
+     1     3  0.13358E+02  0.97221E+02  0.28803E+02 -0.10153E+04  0.10140E+04  0.13815E+01
+     2     3  0.78974E+01 -0.30455E+02  0.84617E+02 -0.80246E+03  0.74271E+03  0.13225E+03
+
+     1     4  0.13358E+02  0.97221E+02  0.28803E+02 -0.10153E+04  0.10140E+04  0.13815E+01
+     2     4  0.78974E+01 -0.30455E+02  0.84617E+02 -0.80246E+03  0.74271E+03  0.13225E+03
+
+     1     5  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99682E+03  0.93145E+03  0.91491E+02
+     2     5  0.17239E+02 -0.31152E+02 -0.81005E+02 -0.41128E+03  0.35643E+03  0.11050E+01
+
+     1     6  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99682E+03  0.93145E+03  0.91491E+02
+     2     6  0.20097E+02  0.62796E+02 -0.11039E+03 -0.31412E+03  0.21492E+03  0.21412E+03
+
+     1     7  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99682E+03  0.93145E+03  0.91491E+02
+     2     7  0.28403E+02  0.87698E+02 -0.17944E+02  0.00000E+00  0.00000E+00  0.21549E+00
+
+     1     8  0.26517E+02  0.83752E+02 -0.15407E+03  0.00000E+00  0.00000E+00  0.24628E+00
+     2     8  0.28403E+02  0.87698E+02 -0.17944E+02  0.00000E+00  0.00000E+00  0.21549E+00
+\end{Verbatim}
+}
+
+\vspace{0.2cm}
+\action Verify that the sum of the four terms equals the total electron self-energy shown in \texttt{epw.out}.
+
+
+\vspace{0.5cm}
+\action Re-run the code with multiple temperatures (using  \texttt{temps = 0.0 200 400 600 800 1000}).
+%
+You should remove the \texttt{restart.fmt} file before doing so.
+
+\vspace{0.2cm}
+Try filling the table below for the band gap renormalization:
+\begin{center}
+   \begin{tabular}{| c | c | c | c | c | c |}
+   \hline
+   T (K) & VBM (meV) & CBM (meV) & CB-$\Gamma$ (meV) & Direct gap (meV) & Indirect gap (meV) \\
+   0     & & & & & \\
+   200   & & & & & \\
+   400   & & & & & \\
+   600   & & & & & \\
+   800   & & & & & \\
+   1000  & & & & & \\
+   \hline
+   \end{tabular}
+\end{center}
+
+With our settings, you should get the following figure (black: indirect gap, red: direct gap):
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=12cm,
+  height=6cm,
+  xmin=0,
+  xmax=1000,
+  ticklabel style={
+      % change "directory" to the number format
+      /pgf/number format/.cd,
+          use comma,
+          fixed,
+      % change "directory" back to tikz
+      /tikz/.cd,
+  },
+  yticklabel style={
+      /pgf/number format/precision=5,
+  },
+  xlabel={$T$ (K)},
+  ylabel={Band gap renormalization (meV)},
+]
+\addplot[black,mark=*,mark size=2pt] table[x index=0,y index=1] {data1.txt};
+\addplot[red, mark=*,mark size=2pt] table[x index=0,y index=2] {data1.txt};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+\end{figure}
+
+
+
+At convergence you should get~\footnote{The figure is from S.\ Ponc\'e \textit{et al}., \href{https://doi.org/10.1063/1.4927081}{J.\ Chem.\ Phys.\ \textbf{143}, 102813 (2015)}}:
+\begin{center}
+\vspace{0.2cm}
+\includegraphics[width=0.8\textwidth]{figures/diamond_gap.png}
+\vspace{0.1cm}
+\end{center}
+
+\action Try to decompose the energy and band gap renormalization into the Fan and DW terms.
+
+\action Try to increase the fine grids and add a few more temperatures and see if you can get a result closer to convergence.
+
+\action Try to change \texttt{ahc\_win\_max} and see the impact on the results.
+
+\action Try removing or renaming the file \texttt{quadrupole.fmt} to do the interpolation without quadrupoles and see the impact on the results.
+
+\action Try removing the \texttt{lopt\_w2b = .true.} option and compare the performance. In particular, compare the time spent in the \texttt{ephW2Bp\_opt} (run with optimization) and \texttt{ephW2Bp} (run without optimization) steps reported in the end of the \texttt{epw.out} file.
+
+
+
+% -----------------------------------------------------------------------------------------
+\newpage
+
+\section*{Exercise 2: Electronic spectral function of MgB$_2$}
+In this example, we calculate the electron spectral function of MgB$_2$ using WFPT.
+We mostly highlight the specificity of spectral function calculations and it is therefore advised to first do exercise 1.
+\\
+
+First go in the second exercise:
+\begin{verbatim}
+$ cd exercise2
+\end{verbatim}
+
+
+\action Make a self-consistent calculation for MgB$_2$ and a phonon calculation on a homogeneous 3$\times$3$\times$3 $\bf{q}$-point grid.
+
+
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
+$ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ph.in > ph.out
+\end{verbatim}
+
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                  scf.in
+&control
+   calculation  = 'scf'
+   restart_mode = 'from_scratch'
+   prefix       = 'mgb2'
+   pseudo_dir   = './'
+   outdir       = './'
+/
+&system
+   ibrav        = 4
+   celldm(1)    = 5.8260252227888
+   celldm(3)    = 1.1420694129095
+   nat          = 3
+   ntyp         = 2
+   ecutwfc      = 40
+   smearing     = 'mp'
+   occupations  = 'smearing'
+   degauss      = 0.05
+/
+&electrons
+   diagonalization = 'david'
+   mixing_beta     = 0.7
+   conv_thr        = 1.0d-12
+/
+ATOMIC_SPECIES
+   Mg  24.305  Mg.pz-n-vbc.UPF
+   B   10.811  B.pz-vbc.UPF
+ATOMIC_POSITIONS crystal
+   Mg       0.000000000   0.000000000   0.000000000
+   B        0.333333333   0.666666667   0.500000000
+   B        0.666666667   0.333333333   0.500000000
+K_POINTS AUTOMATIC
+   8 8 8 0 0 0
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                  ph.in
+&inputph
+    prefix    = 'mgb2'
+    fildyn    = 'mgb2.dyn.xml'
+    fildvscf  = 'dvscf'
+    tr2_ph    =  1.0d-20
+    ldisp     = .true.
+    reduce_io = .true.
+    nmix_ph   = 12
+    nq1 = 3
+    nq2 = 3
+    nq3 = 3
+/
+\end{Verbatim}
+\end{scriptsize}
+
+The calculation should take about \textbf{2 min on 4 cores}. During the run, notice the IBZ \textbf{q}-point grid:
+{\color{cverb}\small
+\begin{verbatim}
+        Dynamical matrices for ( 3, 3, 3)  uniform grid of q-points
+        (   6 q-points):
+          N         xq(1)         xq(2)         xq(3)
+          1   0.000000000   0.000000000   0.000000000
+          2   0.000000000   0.000000000   0.291867841
+          3   0.000000000   0.384900179   0.000000000
+          4   0.000000000   0.384900179   0.291867841
+          5   0.333333333   0.577350269   0.000000000
+          6   0.333333333   0.577350269   0.291867841
+\end{verbatim}
+}
+
+Finally, we need to post-process some of the data to make it ready for EPW.
+%
+To do so, we can use a python script (usually provided in \texttt{QE/EPW/bin/pp.py} but copied here for convenience).
+
+\vspace{0.5cm}
+\action Run the python post-processing to create the \texttt{save} folder
+\begin{verbatim}
+$ python3 $PATHQE/EPW/bin/pp.py
+\end{verbatim}
+The script will ask you to enter the prefix used for the calculation. In this case enter ``mgb2''.
+The script will create a new folder called ``save'' that contains the dvscf potential files, pattern files, and dynamical
+matrices on the IBZ.
+
+
+\vspace{0.5cm}
+\action Do a non self-consistent calculation on a homogeneous 6$\times$6$\times$6 \textbf{uniform and $\Gamma$-centered grid between [0,1) in crystal coordinates}.
+
+
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                 nscf.in
+&control
+    calculation = 'bands'
+    prefix      = 'mgb2'
+    pseudo_dir  = './'
+    outdir      = './'
+    verbosity   = 'high'
+/
+&system
+    ibrav       = 4
+    celldm(1)   = 5.8260252227888
+    celldm(3)   = 1.1420694129095
+    nat         = 3
+    ntyp        = 2
+    ecutwfc     = 40
+    smearing    = 'mp'
+    occupations = 'smearing'
+    degauss     = 0.05
+    nbnd        = 12
+/
+&electrons
+    diagonalization = 'david'
+    mixing_beta     = 0.7
+    conv_thr        = 1.0d-9
+/
+ATOMIC_SPECIES
+    Mg  24.305  Mg.pz-n-vbc.UPF
+    B   10.811  B.pz-vbc.UPF
+ATOMIC_POSITIONS crystal
+    Mg       0.000000000   0.000000000   0.000000000
+    B        0.333333333   0.666666667   0.500000000
+    B        0.666666667   0.333333333   0.500000000
+K_POINTS crystal
+   216
+0.00000000  0.00000000  0.00000000  4.629630e-03
+0.00000000  0.00000000  0.16666667  4.629630e-03
+0.00000000  0.00000000  0.33333333  4.629630e-03
+...
+\end{Verbatim}
+\end{scriptsize}
+
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in nscf.in > nscf.out
+\end{verbatim}
+
+
+% ------------------------------------------------
+\vspace{0.5cm}
+\action Compute the matrix elements for the DW and rest-space Fan self-energy on the coarse $\mb{k}$-point grid
+
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                 ahc.in
+&inputph
+  prefix    = 'mgb2'
+  reduce_io = .true.
+  fildyn    = 'mgb2_ahc.dyn.xml'
+  ldisp     = .true.
+  fildvscf  = 'dvscf'
+  nq1 = 3
+  nq2 = 3
+  nq3 = 3
+
+  ! Input variables for Allen-Heine-Cardona calculation
+  electron_phonon = 'ahc'
+  trans           = .false.
+  ahc_nbnd        = 9
+  ahc_dir         = './save/ahc_dir/'
+ /
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{footnotesize}
+   \textbf{Note}: We set \texttt{ahc\_nbnd = 9}, although we compute \texttt{nbnd = 12} bands in \texttt{nscf.in}.
+   This means that we compute the Sternheimer matrix elements for bands 1 to 9, and skip the calculation for bands 10 to 12. Bands 10 to 12 will be excluded from Wannierization via the input variable \texttt{bands\_skipped} in \texttt{epw.in}.
+\end{footnotesize}
+
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ahc.in > ahc.out
+\end{verbatim}
+
+
+% ------------------------------------------------
+\vspace{0.5cm}
+
+\action Perform an \program{EPW} calculation to transform electron-phonon matrix elements from a coarse 3$\times$3$\times$3 $\mb{q}$-grid in momentum space to real space in the Wannier function basis.
+
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                 epw1.in
+&inputepw
+  prefix      = 'mgb2'
+  outdir      = './'
+  dvscf_dir   = './save'
+  etf_mem     =  0
+
+  elph        = .true.
+  use_ws      = .true.
+  epbwrite    = .true.
+  epwwrite    = .true.
+
+  ! --- Input variables for WFPT ---
+  lwfpt       = .true.
+  ahc_nbnd    = 9
+  ahc_win_max = 8.8
+  ahc_win_min = -100.0
+  ! --------------------------------
+
+  wannierize  = .true.
+  nbndsub     =  5
+
+  num_iter      = 500
+  dis_froz_max  = 8.8
+  proj(1)       = 'B:pz'
+  proj(2)       = 'f=0.5,1.0,0.5:s'
+  proj(3)       = 'f=0.0,0.5,0.5:s'
+  proj(4)       = 'f=0.5,0.5,0.5:s'
+  bands_skipped = 'exclude_bands = 10-12'
+
+  nk1         = 6
+  nk2         = 6
+  nk3         = 6
+
+  nq1         = 3
+  nq2         = 3
+  nq3         = 3
+
+  nkf1        = 1
+  nkf2        = 1
+  nkf3        = 1
+
+  nqf1        = 1
+  nqf2        = 1
+  nqf3        = 1
+/
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw.in > epw.out
+\end{verbatim}
+
+
+\begin{footnotesize}
+{\bf Notes}:
+\begin{itemize}
+    \item \texttt{ahc\_nbnd = 9} is the same as in \texttt{ahc.in}.
+    \item \texttt{ahc\_win\_max} should be equal to or smaller than \texttt{dis\_froz\_max}, the upper bound of the frozen window for Wannierization.
+\end{itemize}
+\end{footnotesize}
+
+
+
+% ------------------------------------------------
+\vspace{0.5cm}
+
+\action Perform an \program{EPW} restart calculation to obtain the electron self-energy and spectral function for \textbf{k} along the same high-symmetry path
+
+\begin{scriptsize}
+ \begin{Verbatim}[frame=single]
+--                                                                                                 epw2.in
+&inputepw
+  prefix      = 'mgb2'
+  outdir      = './'
+  dvscf_dir   = './save'
+  etf_mem     =  0
+  lopt_w2b    = .true.
+
+  elph        = .true.
+  use_ws      = .true.
+  epwread     = .true.
+
+  ! --- Input variables for WFPT ---
+  lwfpt       = .true.
+  ahc_nbnd    = 9
+  ahc_win_max = 8.8
+  ahc_win_min = -100.0
+
+  ! --- Input variables for electron self-energy ---
+  elecselfen = .true.
+  filkf      = './kpt.txt'
+  nqf1       = 10
+  nqf2       = 10
+  nqf3       = 10
+  degaussw   = 0.10  ! eV
+  temps      = 300.0 ! Kelvin
+
+  ! --- Input variables for electron spectral function ---
+  specfun_el   = .true.
+  wmax_specfun =   1.5
+  wmin_specfun = -13.0
+  nw_specfun   = 200
+  ! ------------------------------------------------------
+
+  nbndsub     =  5
+
+  efermi_read  = .true.
+  fermi_energy = 7.4502
+
+  nk1         = 6
+  nk2         = 6
+  nk3         = 6
+
+  nq1         = 3
+  nq2         = 3
+  nq3         = 3
+/
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw2.in > epw2.out
+\end{verbatim}
+
+\begin{footnotesize}
+   {\bf Notes}:
+   \begin{itemize}
+      \item We use \texttt{efermi\_read = .true.} and provide the Fermi energy as \texttt{fermi\_energy = 7.4502} (eV) since we are using $\mb{k}$-points along a high-symmetry path. Otherwise, the code will compute the Fermi energy using the $\mb{k}$ points given by the \texttt{filkf} file. Since this file does not sample the Brillouin zone uniformly, the Fermi energy is incorrect.
+      \item \texttt{elecselfen} asks for the electron self-energy to be computed.
+      \item \texttt{specfun\_el} asks for the electron spectral function to be computed.
+      \item The spectral function is computed for a uniform grid of frequencies between \texttt{wmin\_specfun = -13.0} (eV) and \texttt{wmax\_specfun = 1.5} (eV) with \texttt{nw\_specfun = 200} points. The energy zero is set to \texttt{fermi\_energy = 7.4502} (eV).
+   \end{itemize}
+\end{footnotesize}
+
+The code will produce two additional output files, \texttt{specfun.elself.300.000K} and\\
+\texttt{specfun\_sup.elself.300.000K}.
+
+
+The file \texttt{specfun.elself.300.000K} contains the spectral function data:
+{\color{cverb} \small
+\begin{verbatim}
+   #Electronic spectral function (meV)
+
+
+   #K-point     Energy[eV]     A(k,w)[meV^-1]
+
+        1   -13.00000   0.60715E-06
+        1   -12.92714   0.83532E-06
+        1   -12.85427   0.12018E-05
+         ...
+   # Integrated spectral function    0.12028E+00
+         ...
+\end{verbatim}
+}
+
+The first column is the $\mb{k}$-point index, the second column is the energy $\omega$ in meV (with the reference zero at the Fermi level), and the third column is the total spectral function $\sum_{n} A_{n\mb{k}}(\omega)$ in meV$^{-1}$.
+After all the frequency points are printed for a given $\mb{k}$-point, the integrated spectral function, which is the number of occupied electrons \emph{within the frequency window} is printed.
+Importantly, this does not count the electrons below \texttt{wmin\_specfun}.
+
+
+\vspace{0.2cm}
+
+The file \texttt{specfun\_sup.elself.300.000K} contains the frequency-dependent self-energy:
+{\color{cverb} \small
+\begin{verbatim}
+   #KS eigenenergies + real and im part of electronic self-energy (meV)
+
+
+   #K-point    Band   e_nk[eV]   w[eV]      Real Sigma[meV]  Im Sigma[meV]
+
+         1        1      -12.3573      -13.0000      -29.7716        0.7026
+         1        1      -12.3573      -12.9271      -30.2972        0.7516
+         ...
+         2        1      -12.3551      -13.0000      -29.7596        0.7026
+         2        1      -12.3551      -12.9271      -30.2852        0.7516
+         ...
+\end{verbatim}
+}
+
+For each bands and $\mb{k}$ points, the diagonal part of the frequency-dependent self-energy $\Sigma_{n\mb{k}}(\omega)$ is printed.
+
+
+\vspace{0.2cm}
+
+The computed spectral function can be visualized using the \program{plot.py} script.
+Since the spectral function has sharp peaks at the quasiparticle energy, we linearly interpolate the self-energy to a denser frequency grid before computing the spectral function.
+(See Appendix~1 for the full script.)
+To use matplotlib, we should first load the module and install the matplotlib package.
+
+\begin{verbatim}
+$ module load python/3.9.18
+$ python3 -m pip install matplotlib --user
+$ python3 plot.py
+\end{verbatim}
+
+The script will create two pdf files, \texttt{mgb2\_spectral.pd} and \texttt{mgb2\_spectral\_zoom.pdf}. You may view them using evince or by downloading them to your laptop.
+
+
+\begin{center}
+    \vspace{0.2cm}
+    \includegraphics[width=0.9\textwidth]{figures/mgb2_spectral.pdf}
+    \vspace{0.1cm}
+\end{center}
+The upper panel shows the electron spectral function as the background color.
+The black and red curves show the bare and renormalized electron dispersion.
+
+The lower panel shows the electron occupation at each $\mb{k}$-point, which is the integral of the spectral function multiplied by the Fermi--Dirac function $f_{\rm FD}(\omega) = \frac{1}{e^{(\omega-\mu) / k_{\rm B} T}+1}$.
+This value changes when the dispersion crosses the Fermi level.
+
+Zooming in near the Fermi level, we can see the phonon induced renormalization of the electron dispersion: the red curve is the renormalized band structure, and the black curve is the bare band structure.
+\begin{center}
+   \vspace{0.2cm}
+   \includegraphics[width=0.9\textwidth]{figures/mgb2_spectral_zoom.pdf}
+   \vspace{0.1cm}
+\end{center}
+
+
+The calculation is not fully converged and the spectral function is not yet smooth.
+Using a denser 20$\times$20$\times$20 $\mb{q}$-point grid and 500 frequency points, we have:
+\begin{center}
+   \vspace{0.2cm}
+   \includegraphics[width=0.9\textwidth]{figures/mgb2_spectral_zoom_dense.pdf}
+   \vspace{0.1cm}
+\end{center}
+
+
+% -----------------------------------------------------------------------------------------
+%\afterpage{\clearpage}
+
+
+\newpage
+
+\section*{Exercise 3: Phononic spectral function of MgB$_2$}
+
+In this example, we calculate the phonon spectral function of MgB$_2$.
+We mostly highlight the specificity of phonon spectral function calculations and it is therefore advised to first do exercise 2.
+
+The 1-loop (1L) contribution to the phonon self-energy is given by\footnote{M.\ Calandra \textit{et al}., \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.82.165111}{Phys.\ Rev.\ B \textbf{82}, 165111 (2010)}, J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}}
+\begin{equation} \label{eq:phself}
+   \Pi^{\rm 1L}_\qnu(\omega; T) = \frac{g_{\rm s}}{N_k} \sum_{mn\mb{k}} \frac{f_{n\mb{k}}(T) - f_{m\mb{k+q}}(T)}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k+q}} + \omega + i\eta} \lvert g_{mn\nu}(\mb{k}, \mb{q}) \rvert^2.
+\end{equation}
+Here, $g_{\rm s}$ is the spin degeneracy factor.
+In principle, the self-energy $\Pi^{\rm 1L}_{\mb{q}\mu\nu}(\omega; T)$ also has off-diagonal terms that couple different phonon modes and change the phonon eigenmodes\footnote{J.\ Berges \textit{et al}., \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.101.155107}{Phys. Rev. B \textbf{101}, 155107 (2020)}, see Fig.~2(c).}, but we neglect them here: $\Pi^{\rm 1L}_{\mb{q}\mu\nu} \stackrel{\Delta}{=} \Pi^{\rm 1L}_{\mb{q}\nu} \delta_{\mu \nu}$.
+Calculation of the off-diagonal self-energy will be made available in the EPW code in the near future.
+
+\vspace{0.2cm}
+
+Since the DFPT calculation already includes static screening, we have to subtract the static DFPT contribution from the phonon self-energy to avoid double counting.
+Also, in this ``unscreening'' process, we have to take into account that the DFPT calculation is done usually at a high temperature (e.g., $T^{\rm high} = 8000$~K) and the phonon self-energy is calculated at a lower temperature (e.g., $T^{\rm low} = 300$~K).
+Hence, we subtract the static self-energy at $T^{\rm high}$, and then add the dynamical self-energy at $T^{\rm low}$:
+\begin{equation} \label{eq:phself_unscreening}
+   \Delta \Pi_\qnu(\omega; T^{\rm low}) = \Pi^{\rm 1L}_\qnu(\omega; T^{\rm low}) - \Pi^{\rm 1L}_\qnu(0; T^{\rm high})
+\end{equation}
+More information about the phonon self-energy and the unscreening procedure can be found in the article J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}.
+
+\vspace{0.2cm}
+
+The phonon spectral function reads\footnote{P.\ B.\ Allen and R.\ Silberglitt, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.9.4733}{Phys.\ Rev.\ B \textbf{9}, 4733 (1974)}. See also Eqs.~(2,3) of J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}. We have an additional $2\omega_\qnu$ factor multiplied to the self-energy because of the difference in the definition of the electron-phonon matrix element $g_{mn\nu}(\mb{k}, \mb{q})$. Compare Eq.~(2) of F.\ Giustino, \href{https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.89.015003}{Rev. Mod. Phys. \textbf{89}, 015003 (2017)} and Eq.~(12) of J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}.}
+\begin{equation} \label{eq:phspec}
+   A_{\mb{q}}(\omega; T) = -\frac{2\omega}{\pi} \sum_{\nu} \mathrm{Im} \frac{1}{(\omega + i\eta)^2 - \omega_\qnu^2 - 2\omega_\qnu \, \Delta \Pi_\qnu(\omega; T)}
+\end{equation}
+
+\vspace{0.2cm}
+
+\action Make a self-consistent calculation, a phonon calculation, and an \program{EPW} calculation to transform electron-phonon matrix elements to real space.
+
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
+$ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ph.in > ph.out
+$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in nscf.in > nscf.out
+$ python3 $PATHQE/EPW/bin/pp.py < pp.in
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 epw1.in > epw1.out
+\end{verbatim}
+
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+--                                                                                                  scf.in
+&control
+   calculation  = 'scf'
+   restart_mode = 'from_scratch'
+   prefix       = 'mgb2'
+   pseudo_dir   = './'
+   outdir       = './'
+/
+&system
+   ibrav        = 4
+   celldm(1)    = 5.8260252227888
+   celldm(3)    = 1.1420694129095
+   nat          = 3
+   ntyp         = 2
+   ecutwfc      = 40
+   smearing     = 'fermi-dirac'
+   occupations  = 'smearing
+   degauss      = 0.02
+/
+&electrons
+   diagonalization = 'david'
+   mixing_beta     = 0.7
+   conv_thr        = 1.0d-12
+/
+ATOMIC_SPECIES
+   Mg  24.305  Mg.pz-n-vbc.UPF
+   B   10.811  B.pz-vbc.UPF
+ATOMIC_POSITIONS crystal
+   Mg       0.000000000   0.000000000   0.000000000
+   B        0.333333333   0.666666667   0.500000000
+   B        0.666666667   0.333333333   0.500000000
+K_POINTS AUTOMATIC
+   12 12 8 0 0 0
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+--                                                                                                   ph.in
+&inputph
+    prefix    = 'mgb2'
+    fildyn    = 'mgb2.dyn.xml'
+    fildvscf  = 'dvscf'
+    tr2_ph    =  1.0d-20
+    ldisp     = .true.
+    reduce_io = .true.
+    nmix_ph   = 12
+    nq1 = 3
+    nq2 = 3
+    nq3 = 2
+/
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+--                                                                                                   pp.in
+mgb2
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+--                                                                                                 epw1.in
+&inputepw
+   prefix      = 'mgb2'
+   outdir      = './'
+   dvscf_dir   = './save'
+   etf_mem     =  0
+
+   elph        = .true.
+   use_ws      = .true.
+   epbwrite    = .true.
+   epwwrite    = .true.
+
+   wannierize  = .true.
+   nbndsub     =  5
+
+   num_iter      = 500
+   dis_froz_max  = 8.8
+   proj(1)       = 'B:pz'
+   proj(2)       = 'f=0.5,1.0,0.5:s'
+   proj(3)       = 'f=0.0,0.5,0.5:s'
+   proj(4)       = 'f=0.5,0.5,0.5:s'
+   bands_skipped = 'exclude_bands = 10-12'
+
+   nk1         = 6
+   nk2         = 6
+   nk3         = 6
+
+   nq1         = 3
+   nq2         = 3
+   nq3         = 2
+
+   nkf1        = 1
+   nkf2        = 1
+   nkf3        = 1
+
+   nqf1        = 1
+   nqf2        = 1
+   nqf3        = 1
+/
+\end{Verbatim}
+\end{scriptsize}
+
+
+The input files are similar to those used in Exercise 2, except for the following changes:
+\begin{footnotesize}
+\begin{itemize}
+   \item For \texttt{scf.in}, we use \texttt{smearing = `fermi-dirac'} instead of \texttt{smearing = `mp'}.
+   The reason is that EPW assumes Fermi--Dirac smearing in the phonon self-energy calculation.\footnote{The current version of EPW only supports Fermi--Dirac smearing in the phonon self-energy calculation. In the next release of EPW, we will support other smearing functions. We will also enable an option to automatize the ``unscreening'' of the phonon self-energy.}
+   \item To deal with the change in the smearing, we increased the $\mb{k}$ point grid to $12\times12\times8$ in \texttt{scf.in}.
+   \item To make the phonon calculation run faster, we reduced \texttt{nq3} to 2 in \texttt{ph.in} and \texttt{epw1.in}. This parameter should be larger ($\sim$10) in a real calculation.
+   \item For the \texttt{epw1.in} file, we remove input arguments related to WFPT.
+\end{itemize}
+\end{footnotesize}
+
+
+
+\vspace{0.5cm}
+
+\action Perform an \program{EPW} restart calculation to obtain the electron self-energy and spectral function for \textbf{k} along the same high-symmetry path
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 epw2.in > epw2.out
+\end{verbatim}
+
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+--                                                                                                 epw2.in
+&inputepw
+  prefix      = 'mgb2'
+  outdir      = './'
+  dvscf_dir   = './save'
+  etf_mem     =  1
+  lopt_w2b    = .false.
+
+  elph        = .true.
+  use_ws      = .true.
+  epwread     = .true.
+
+  ! --- Input variables for phonon spectral function ---
+  specfun_ph   = .true.
+
+  filqf      = './qpt.txt'
+  nkf1       = 10
+  nkf2       = 10
+  nkf3       = 10
+
+  wmin_specfun = 0.00 ! eV
+  wmax_specfun = 0.12 ! eV
+  nw_specfun   = 200
+  degaussw   = 0.05   ! eV
+  temps      = 300.0  3157.75  ! Kelvin (0.02 Ry = 3157.75 K)
+  ! ------------------------------------------------------
+
+  nbndsub     =  5
+
+  efermi_read  = .true.
+  fermi_energy = 7.5014
+
+  nk1         = 6
+  nk2         = 6
+  nk3         = 6
+
+  nq1         = 3
+  nq2         = 3
+  nq3         = 2
+/
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{footnotesize}
+   {\bf Notes}:
+   \begin{itemize}
+      \item We set \texttt{lopt\_w2b = .false.} because the $\mb{q}$-point is not from a homogeneous grid, so the optimization does not work. We can then use the memory-optimized version with \texttt{etf\_mem = 1}.
+      \item \texttt{specfun\_ph} asks for the frequency-dependent phonon self-energy and spectral function to be computed.
+      \item \texttt{filqf} is the file containing the $\mb{q}$-points for the phonon spectral function calculation.
+      \item \texttt{nkf1}, \texttt{nkf2}, and \texttt{nkf3} are the number of $\mb{k}$-points in the $\mb{k}$-point grid for the phonon spectral function calculation.
+      \item The spectral function is computed for a uniform grid of frequencies between \texttt{wmin\_specfun = 0.00} (eV) and \texttt{wmax\_specfun = 0.12} (eV) with \texttt{nw\_specfun = 200} points.
+      \item \texttt{degaussw = 0.05} (eV) is the smearing parameter $\eta$ in the self-energy formula Eq.~\eqref{eq:phself}.
+      \item We compute the self-energy at two temperatures \texttt{temps = 300.0, 3157.75} (K) to account for the unscreening procedure. 3157.75~K corresponds to 0.02~Ry smearing value used in the SCF calculation.
+   \end{itemize}
+\end{footnotesize}
+
+
+\vspace{0.5cm}
+
+In addition to the standard output, the code will produce additional output files.
+One can obtain a complete information on the frequency-dependent self-energy from the file \texttt{specfun\_sup.phon} (again, we trimmed some digits):
+{\color{cverb} \small
+\begin{verbatim}
+#Phonon eigenenergies + real and im part of phonon self-energy (meV)
+#Q-point    Mode      Temp.[K]       w_q[eV]        w[eV]    Real Sigma(w)[meV]
+   Real Sigma(w=0)[meV]     Im Sigma(w)[meV]
+      1        1   300.000      -0.00000       0.00000    0.00000E+00    0.00000E+00    0.00000E+00
+      1        2   300.000      -0.00000       0.00000    0.00000E+00    0.00000E+00    0.00000E+00
+      ...
+\end{verbatim}
+}
+
+The static self-energy $\Pi^{\rm 1L}_\qnu(0; T^{\rm high})$ in \Eq{eq:phself_unscreening} can be found in the 7th column, and the dynamical self-energy $\Pi^{\rm 1L}_\qnu(\omega; T^{\rm low})$ is in the 6th (real part) and 8th (imaginary part) columns, for the corresponding temperatures in the 3rd row.
+
+
+\vspace{0.2cm}
+
+The output can be parsed and visualized using the \program{plot.py} script.
+The script implements Eq.~\eqref{eq:phspec} for the calculation of the self-energy.
+As in the electronic case, we linearly interpolate the self-energy in frequency.
+(See Appendix~2 for the full script.)
+(If you get \texttt{ModuleNotFoundError}, make sure you have loaded the python module and install the matplotlib package (see page 15).)
+
+\begin{verbatim}
+$ python3 plot.py
+\end{verbatim}
+
+The result looks as follows:
+
+\begin{center}
+   \vspace{0.2cm}
+   \includegraphics[width=0.9\textwidth]{figures/mgb2_phonon.pdf}
+   \vspace{0.1cm}
+\end{center}
+
+The red dashed curves show the high-temperature phonon dispersion computed using DFPT, the orange dash-dotted curves the low-temperature static phonon dispersion, and the background color the low-temperature spectral function.
+One finds that the phonon spectral function is broadened and shifted due to the electron-phonon interaction.
+The integral of the spectral function should give the number of phonon modes in the system.
+Here, the frequency and $\mb{k}$-point mesh is too coarse, so the integral is not exactly 9 but oscillates around 9.
+
+\vspace{0.2cm}
+
+Using a denser $60\times60\times60$ $\mb{k}$-point grid and 500 frequency points, we have:
+\begin{center}
+   \vspace{0.2cm}
+   \includegraphics[width=0.9\textwidth]{figures/mgb2_phonon_dense.pdf}
+   \vspace{0.1cm}
+\end{center}
+
+\action Try to increase the number of frequency grid points and the number of $\mb{k}$ points to converge the spectral function and the integral.
+
+\action Try to change the temperature and see the temperature dependence of the spectral function.
+
+
+\clearpage
+
+\section*{Appendix 1: Plotting script for the electron self-energy}
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+#!/usr/bin/env python3
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.image import NonUniformImage
+
+plt.rcParams.update({'font.size': 15})
+
+def parse_epw_selfen(filename, nk, nbnd):
+    xks = np.zeros((3, nk))
+    energy = np.zeros((nbnd, nk))
+    sigma = np.zeros((nbnd, nk), dtype=complex)
+
+    with open(filename, 'r') as f:
+        for line in f:
+            if "Electron Self-Energy using Wannier function perturbation theory" in line:
+                break
+        print(f.readline())
+        f.readline()
+        f.readline()
+        for ik in range(nk):
+            xks[:, ik] = [float(x) for x in f.readline().split()[-3:]]
+            f.readline()
+            for ib in range(nbnd):
+                data = f.readline().split()
+                energy[ib, ik] = float(data[3])
+                sigma[ib, ik] = float(data[6]) + 1j * float(data[9])
+            f.readline()
+            f.readline()
+            f.readline()
+
+    sigma /= 1000 # meV to eV
+    return xks, energy, sigma
+
+
+def parse_epw_specfun_sup(filename):
+    data = np.loadtxt(filename)
+    nk = int(data[-1, 0])
+    nbnd = int(data[-1, 1])
+
+    data = data.reshape(nbnd, nk, -1, 6)
+    ws = data[0, 0, :, 3]
+    es = data[:, :, 0, 2]
+    sigma = (data[:, :, :, 4] + 1j * data[:, :, :, 5]) / 1000 # meV to eV
+    return ws, es, sigma
+
+def parse_epw_specfun(filename):
+    data = np.loadtxt(filename)
+    nk = int(data[-1, 0])
+
+    data = data.reshape(nk, -1, 3)
+    ws = data[0, :, 1]
+    As = data[:, :, 2] * 1000  # 1/meV to 1/eV
+
+    n_int = []
+    with open(filename, "r") as f:
+        for line in f:
+            if "Integrated spectral function" in line:
+                n_int += [float(line.split()[-1])]
+    n_int = np.array(n_int)
+
+    return ws, As, n_int
+
+# -------------------------------------
+# Parse EPW output
+use_interpolation = True
+T = 300.0
+
+ws, es, sigma = parse_epw_specfun_sup(f"specfun_sup.elself.{T:.3f}K")
+ws, As, nocc = parse_epw_specfun(f"specfun.elself.{T:.3f}K")
+nbnd, nk, nfreq = sigma.shape
+
+xks, _, sigma_ahc = parse_epw_selfen("epw2.out", nk, nbnd)
+
+
+# -------------------------------------
+# Compute spectral function on a denser frequency grid using linear interpolation of the self-energy
+# A = 1 / (w - e - sigma)
+ws_itp = np.linspace(ws.min(), ws.max(), 10_000, True)
+dw = ws_itp[1] - ws_itp[0]
+fermi_dirac = 1 / (np.exp(ws_itp / (T * 8.61732814974056E-05)) + 1)
+
+nocc_itp = np.zeros((nk,))
+As_itp = np.zeros((nk, len(ws_itp)))
+for ik in range(nk):
+    for ib in range(nbnd):
+        sigma_itp = np.interp(ws_itp, ws, sigma[ib, ik, :])
+        As_itp[ik, :] += (1 / (ws_itp - es[ib, ik] - sigma_itp)).imag / np.pi
+    nocc_itp[ik] += np.sum(As_itp[ik, :] * fermi_dirac) * dw
+
+# -------------------------------------
+if use_interpolation:
+    # With interpolation
+    As_plot = As_itp
+    ws_plot = ws_itp
+    nocc_plot = nocc_itp
+
+else:
+    # Without interpolation
+    As_plot = As
+    ws_plot = ws
+    nocc_plot = nocc
+
+
+# Set x axis
+dks = np.linalg.norm(xks[:, 1:] - xks[:, :-1], axis=0)
+xs = np.concatenate(([0.], np.cumsum(dks)))
+
+fig, axes = plt.subplots(2, 2, figsize=(10, 6), sharex="col",
+    gridspec_kw={'height_ratios': [3, 1], "width_ratios":[1,0.02]})
+
+axes[1, 1].set_axis_off()
+
+# -------------------------------------
+# Plot spectral function
+plt.sca(axes[0, 0])
+im = NonUniformImage(axes[0, 0], interpolation='nearest',
+    extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()],
+    cmap="viridis", norm=plt.matplotlib.colors.LogNorm(vmin=0.01, vmax=10))
+im.set_data(xs, ws_plot, As_plot.T)
+axes[0, 0].add_image(im)
+cbar = plt.colorbar(im, cax=axes[0, 1])
+cbar.set_label("$A_{\mathbf{k}}(\omega)$ (1/eV)")
+
+# Plot bands
+for ibnd in range(nbnd):
+    plt.plot(xs, es[ibnd, :], "k-", lw=1)
+    plt.plot(xs, es[ibnd, :] + sigma_ahc[ibnd, :].real, "r-", lw=1)
+
+plt.axhline(0, c="grey", lw=1)
+plt.ylabel("$\omega - E_\mathrm{Fermi}$ (eV)")
+plt.ylim([ws_plot.min(), ws_plot.max()])
+
+# -------------------------------------
+# Plot integrated spectral function
+plt.sca(axes[1, 0])
+dw = ws_plot[1] - ws_plot[0]
+# plt.plot(xs, np.sum(As_plot, axis=1) * dw, label=r"$A(\omega)$")
+plt.plot(xs, nocc_plot, "-", label=r"$A(\omega) f_{\rm FD}(\omega)$", lw=2)
+plt.ylabel(r"$\int A(\omega) f_{\rm FD}(\omega) d\omega$")
+# plt.legend()
+
+plt.ylim([0, 6])
+for i in range(6):
+    plt.axhline(i, c="k", lw=0.5, ls="--")
+
+xs_highsym = xs[np.arange(0, 351, 50)]
+for x in xs_highsym:
+    for ax in axes[:, 0]:
+        ax.axvline(x, c="k", lw=1)
+plt.xticks(xs_highsym, ["$\Gamma$", "M", "K", "$\Gamma$", "A", "L", "H", "A"])
+plt.xlim([xs[0], xs[-1]])
+
+
+plt.tight_layout()
+fig.savefig("mgb2_spectral.pdf")
+
+axes[0, 0].set_ylim([-1.0, 1.5])
+fig.savefig("mgb2_spectral_zoom.pdf")
+#plt.show()
+\end{Verbatim}
+\end{scriptsize}
+
+
+\clearpage
+
+\section*{Appendix 2: Plotting script for the phonon self-energy}
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+#!/usr/bin/env python3
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.image import NonUniformImage
+
+plt.rcParams.update({'font.size': 15})
+
+filename = "specfun_sup.phon"
+
+# --------------------------------------
+# Parse specfun_sup file
+data = np.loadtxt(filename)
+nq = int(data[-1, 0])
+nmodes = int(data[-1, 1])
+
+# [iq, iT, iw, imode, idata]
+data = data.reshape(nq, 2, -1, nmodes, 8)
+ws = data[0, 0, :, 0, 4] * 1e3  # eV to meV
+nw = len(ws)
+
+T_low = data[0, 0, 0, 0, 2]
+T_high = data[0, 1, 0, 0, 2]
+w_ph = data[:, 0, 0, :, 3] * 1e3  # eV to meV
+Pi_low = data[:, 0, :, :, 5] + 1j * data[:, 0, :, :, 7]
+Pi_high_0 = data[:, 1, :, :, 6]
+Pi = Pi_low - Pi_high_0
+
+xks = np.loadtxt("qpt.txt", skiprows=1)[:, :3].T
+dks = np.linalg.norm(xks[:, 1:] - xks[:, :-1], axis=0)
+xs = np.concatenate(([0.], np.cumsum(dks)))
+
+ws_plot = np.linspace(ws.min(), ws.max(), 1_000, True)
+
+# --------------------------------------
+# Compute self-energy
+A = np.zeros((nq, len(ws_plot)))
+w_ph_low = np.zeros_like(w_ph)
+eta = 0.1 # meV
+
+for iq in range(nq):
+   for imode in range(nmodes):
+      wq = w_ph[iq, imode]
+
+      w2 = wq**2 + 2 * wq * Pi[iq, 0, imode]
+      w_ph_low[iq, imode] = np.sqrt(abs(w2).real) * np.sign(w2.real)
+
+      Pi_itp = np.interp(ws_plot, ws, Pi[iq, :, imode])
+
+      for iw in range(len(ws_plot)):
+         w = ws_plot[iw]
+         Pi_w = Pi_itp[iw]
+         A[iq, iw] += -np.imag(2 * w / ((w + 1j * eta)**2 - wq**2 - 2 * wq * Pi_w)) / np.pi
+
+A[A < 0] = 1e-10
+
+fig, axes = plt.subplots(2, 2, figsize=(10, 6), sharex="col",
+   gridspec_kw={'height_ratios': [3, 1], "width_ratios":[1,0.02]})
+axes[1, 1].set_axis_off()
+
+# -------------------------------------
+# Plot spectral function
+plt.sca(axes[0, 0])
+im = NonUniformImage(axes[0, 0], interpolation='nearest',
+   extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()], cmap="viridis",
+   norm=plt.matplotlib.colors.LogNorm(vmin=0.01, vmax=10))
+im.set_data(xs, ws_plot, A.T)
+axes[0, 0].add_image(im)
+cbar = plt.colorbar(im, cax=axes[0, 1])
+cbar.set_label("$A_{\mathbf{q}}(\omega)$ (1/meV)")
+
+# Plot bands
+for i in range(nmodes):
+   plt.plot(xs, w_ph[:, i], "r--", lw=1, label=f"DFPT T={T_high:.0f}K" if i == 0 else None)
+   plt.plot(xs, w_ph_low[:, i], "-.", c="C1", lw=1, label=f"EPW T={T_low:.0f}K" if i == 0 else None)
+plt.legend(framealpha=1.0, loc="upper center", ncol=2)
+
+plt.axhline(0, c="grey", lw=1)
+plt.ylabel("$\omega$ (meV)")
+plt.ylim([ws_plot.min(), ws_plot.max()])
+
+# -------------------------------------
+# Plot integrated spectral function
+plt.sca(axes[1, 0])
+dw = ws_plot[1] - ws_plot[0]
+plt.plot(xs, np.sum(A, axis=1) * dw, "-", label=r"$A(\omega)$", lw=2)
+plt.ylabel(r"$\int A_{\mathbf{q}}(\omega) d\omega$")
+
+plt.ylim([0, 12])
+plt.yticks([0, 9])
+plt.axhline(9, c="k", ls="--")
+
+xs_highsym = xs[np.arange(0, 351, 50)]
+for x in xs_highsym:
+      for ax in axes[:, 0]:
+         ax.axvline(x, c="k", lw=1)
+plt.xticks(xs_highsym, ["$\Gamma$", "M", "K", "$\Gamma$", "A", "L", "H", "A"])
+plt.xlim([xs[0], xs[-1]])
+
+
+plt.tight_layout()
+fig.savefig("mgb2_phonon.pdf")
+#plt.show()
+\end{Verbatim}
+\end{scriptsize}
+
+\end{document}

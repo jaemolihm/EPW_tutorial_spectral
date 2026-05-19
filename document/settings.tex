@@ -1,0 +1,50 @@
+
+\usepackage{graphicx, color, wrapfig, fancyhdr, tikz, marginnote, caption, multicol, sans}
+\usepackage{menukeys, lastpage, tcolorbox, framed}
+\usepackage[colorlinks = true,
+            linkcolor = black,
+            urlcolor  = blue,
+            citecolor = black,
+            anchorcolor = black]{hyperref}
+\usepackage{fancyvrb}
+\usepackage{amssymb}
+
+% for the correct quote character in verbatim
+\usepackage{upquote}
+
+\reversemarginpar
+
+\setlength{\parindent}{0pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{1.2pt}
+\renewcommand{\footrulewidth}{1.2pt}
+\setlength\hoffset{-1.6cm}
+\setlength\voffset{-0.5cm}
+\setlength\textwidth{16.1cm}
+\setlength\textheight{23.8cm}
+\setlength\footskip{0.65cm}
+\setlength\headsep{0.5cm}
+\fancyheadoffset{0pt}
+\renewcommand\refname{}
+\captionsetup[figure]{labelformat=empty}
+
+\newcommand{\tstamp}{\today}
+\lhead[\fancyplain{}{\rightmark}]{\fancyplain{}{}}
+\rhead[\fancyplain{}{\rightmark}]{\fancyplain{}{}}
+\lfoot[\fancyplain{}{}]{\fancyplain{}{10-16 June 2026}}
+\cfoot[\fancyplain{}{}]{\fancyplain{}{J.-M.\ Lihm}}
+\rfoot[\fancyplain{}{}]{\fancyplain{}{Tutorial $|$ \thepage \ of \pageref{LastPage}}}
+
+\newcommand{\ret}{\keys{\return}}
+
+\definecolor{blue2}{rgb}{0.0,0.1,0.6}
+\definecolor{lightblue}{rgb}{0.5,0.5,0.7}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.4}
+\definecolor{cverb}{rgb}{0.5,0.5,0.5}
+
+\newcommand{\program}[1]{{\tt \textcolor{blue}{#1}}}
+
+\newcommand{\action}{{\color{red}{\large $\blacktriangleright\,$}}}
