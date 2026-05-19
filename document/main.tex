@@ -122,7 +122,7 @@ Here, $\hat{P}^{\rm R}_{\mb{k+q}}$ is the projector onto the high-energy bands.
 
 Using WFPT, the wavefunction perturbation $| \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle$ can be represented in terms of localized objects.
 These objects are called ``Wannier function perturbations'', as they are the change of Wannier functions due to a phonon perturbation.
-Correspoingly, the matrix element on the right-hand side of \Eq{eq:sternheimer_mel} can be Wannier interpolated from a coarse $\mb{k}$-point grid to real space, and then to a dense $\mb{k}$-point grid.
+Correspondingly, the matrix element on the right-hand side of \Eq{eq:sternheimer_mel} can be Wannier interpolated from a coarse $\mb{k}$-point grid to real space, and then to a dense $\mb{k}$-point grid.
 More information about WFPT can be found in the article \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.11.041053}{J.\ M.\ Lihm and C.\ H.\ Park, Phys. Rev. X \textbf{11}, 041053 (2021)}.
 
 
@@ -153,7 +153,7 @@ Therefore, in the RIA, the DW self-energy takes the following explicit form:
    \sum_{\kappa\alpha\alpha'} e^*_{\kappa\alpha\nu}(\mb{q}) e_{\kappa\alpha'\nu}(\mb{q})
    \langle u_{n\mb{k}} | [\partial_{\mb{0}\kappa\alpha} \hat{V}, \hat{p}_{\alpha'}] | u_{n\mb{k}} \rangle\,.
 \end{equation}
-Note the $\kappa$, the atomic index, is the same for the two eigenmodes as the RIA neglects inter-atomic cross-derivatives.
+Note that $\kappa$, the atomic index, is the same for the two eigenmodes as the RIA neglects inter-atomic cross-derivatives.
 % More information can be found in the article \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.101.121102}{Phys. Rev. B \textbf{101}, 121102(R) (2020)}.
 
 
@@ -217,7 +217,7 @@ $ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
 
 % ------------------------------------------------
 \vspace{0.5cm}
-\action Compute the vibrational properties of c-BN on a coarse 4x4x4 $\bf{q}$-point grid.
+\action Compute the vibrational properties of diamond on a coarse 4x4x4 $\bf{q}$-point grid.
 
 \begin{scriptsize}
  \begin{Verbatim}[frame=single]
@@ -452,11 +452,11 @@ $ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw.in > epw.out
    \item \texttt{lopt\_w2b = .true.} enables the optimization of the Wannier interpolation that reduces a 3D Fourier transformation to a nested 1D Fourier transformation with cached intermediate results. This option can significantly improve performance \textit{without} compromising any accuracy when using homogeneous $\mb{q}$-point grids. See Eqs.~(8,9) of J.\ Kaye \textit{et al}., \href{https://scipost.org/SciPostPhys.15.2.062}{SciPost Phys. 15, 062 (2023)}.
    \item \texttt{lwfpt} enables WFPT.
    \item \texttt{ahc\_nbnd} specifies the number of bands for which the Sternheimer matrix element is computed. This number should be the same as in the \texttt{ahc.in} file.
-   \item \texttt{ahc\_win\_min} and \texttt{ahc\_win\_max} specifies the lower and upper boundaries of the active space.
+   \item \texttt{ahc\_win\_min} and \texttt{ahc\_win\_max} specify the lower and upper boundaries of the active space.
    \item \texttt{elecselfen} asks for the electron self-energy to be computed.
    \item \texttt{degaussw = 0.02} specifies the smearing parameter $\eta$ in the units of eV.
-   \item \texttt{temps} define the lattice temperature at which the self-energy is evaluated.
-   \item The code should have detected the presence of the \texttt{quadrupole.fmt} file and correclty read the quadrupole tensor. Look in the output for the line \texttt{Quadrupole tensor is correctly read}.
+   \item \texttt{temps} defines the lattice temperature at which the self-energy is evaluated.
+   \item The code should have detected the presence of the \texttt{quadrupole.fmt} file and correctly read the quadrupole tensor. Look in the output for the line \texttt{Quadrupole tensor is correctly read}.
    \item If you run the code for the second time, you can skip Wannierization and the calculation of the real-space electron-phonon matrix elements by uncommenting the lines \texttt{wannierize = .false.} and \texttt{epwread = .true.}, and commenting out the three lines above them, \texttt{wannierize = .true.}, \texttt{epbwrite = .true.}, and \texttt{epwwrite = .true.}.
 \end{itemize}
 \end{footnotesize}
@@ -504,7 +504,7 @@ E(   8 )=   13.403539 eV   Re[Sigma]=  0.00000...E+00 meV Im[Sigma]=  0.21549...
 
 \vspace{0.2cm}
 A more detailed analysis of the electron self-energy can be found in the file \texttt{elself\_wfpt\_sup.0.000K}.
-Each of the column shows the contribution of each electron self-energy term: active-space Fan (Eq.~\eqref{eq:fan_active}), active-space DW, rest-space Fan (Eq.~\eqref{eq:fan_rest}), and rest-space DW.
+Each column shows the contribution of each electron self-energy term: active-space Fan (Eq.~\eqref{eq:fan_active}), active-space DW, rest-space Fan (Eq.~\eqref{eq:fan_rest}), and rest-space DW.
 One can find that the rest-space Fan and DW terms have large values with opposite signs.
 (Again, we have removed some digits for brevity.)
 
@@ -619,10 +619,10 @@ At convergence you should get~\footnote{The figure is from S.\ Ponc\'e \textit{e
 
 \section*{Exercise 2: Electronic spectral function of MgB$_2$}
 In this example, we calculate the electron spectral function of MgB$_2$ using WFPT.
-We mostly highlight the specificity of spectral function calculations and it is therefore advised to first do exercise 1.
+We mostly highlight the specifics of spectral function calculations and it is therefore advised to first do Exercise 1.
 \\
 
-First go in the second exercise:
+First go to the second exercise:
 \begin{verbatim}
 $ cd exercise2
 \end{verbatim}
@@ -975,7 +975,7 @@ The file \texttt{specfun.elself.300.000K} contains the spectral function data:
 \end{verbatim}
 }
 
-The first column is the $\mb{k}$-point index, the second column is the energy $\omega$ in meV (with the reference zero at the Fermi level), and the third column is the total spectral function $\sum_{n} A_{n\mb{k}}(\omega)$ in meV$^{-1}$.
+The first column is the $\mb{k}$-point index, the second column is the energy $\omega$ in eV (with the reference zero at the Fermi level), and the third column is the total spectral function $\sum_{n} A_{n\mb{k}}(\omega)$ in meV$^{-1}$.
 After all the frequency points are printed for a given $\mb{k}$-point, the integrated spectral function, which is the number of occupied electrons \emph{within the frequency window} is printed.
 Importantly, this does not count the electrons below \texttt{wmin\_specfun}.
 
@@ -999,14 +999,13 @@ The file \texttt{specfun\_sup.elself.300.000K} contains the frequency-dependent 
 \end{verbatim}
 }
 
-For each bands and $\mb{k}$ points, the diagonal part of the frequency-dependent self-energy $\Sigma_{n\mb{k}}(\omega)$ is printed.
+For each band and $\mb{k}$ point, the diagonal part of the frequency-dependent self-energy $\Sigma_{n\mb{k}}(\omega)$ is printed.
 
 
 \vspace{0.2cm}
 
 The computed spectral function can be visualized using the \program{plot.py} script.
 Since the spectral function has sharp peaks at the quasiparticle energy, we linearly interpolate the self-energy to a denser frequency grid before computing the spectral function.
-(See Appendix~1 for the full script.)
 To use matplotlib, we should first load the module and install the matplotlib package.
 
 \begin{verbatim}
@@ -1015,7 +1014,7 @@ $ python3 -m pip install matplotlib --user
 $ python3 plot.py
 \end{verbatim}
 
-The script will create two pdf files, \texttt{mgb2\_spectral.pd} and \texttt{mgb2\_spectral\_zoom.pdf}. You may view them using evince or by downloading them to your laptop.
+The script will create two pdf files, \texttt{mgb2\_spectral.pdf} and \texttt{mgb2\_spectral\_zoom.pdf}. You may view them using evince or by downloading them to your laptop.
 
 
 \begin{center}
@@ -1073,7 +1072,7 @@ In this exercise, we will try to reproduce the experimental self-energy and the 
 
 \vspace{0.2cm}
 
-\action Go in the third exercise:
+\action Go to the third exercise:
 \begin{verbatim}
 $ cd exercise3
 \end{verbatim}
@@ -1276,7 +1275,7 @@ In the experiments, the bare band is not directly accessible and is extracted by
 %
 In order to mimic this procedure, we manually shift the bare band down by about 40~meV to match the high-energy part of the spectral function, and plot it together with the renormalized band (red) in \texttt{graphene\_spectral\_doped\_shifted\_band.pdf}.
 %
-We now see that the bare band align well with the spectral function at the Fermi level, and the velocity renormalization and kink appears approximately symmetric with respect to the Fermi level.
+We now see that the bare band aligns well with the spectral function at the Fermi level, and the velocity renormalization and kink appears approximately symmetric with respect to the Fermi level.
 
 \begin{center}
    \vspace{0.2cm}
@@ -1303,7 +1302,7 @@ The real and imaginary parts of the calculated self-energy can be compared with 
    \vspace{0.1cm}
 \end{center}
 
-We find a good qualitative agreement, peak in the real part of the self-energy at $\hbar\omega_{\rm ph} \approx 200$~meV, and a dip in the imaginary part of the self-energy at the same energy.
+We find a good qualitative agreement, with a peak in the real part of the self-energy at $\hbar\omega_{\rm ph} \approx 200$~meV, and a dip in the imaginary part of the self-energy at the same energy.
 
 \vspace{0.2cm}
 
@@ -1323,7 +1322,7 @@ We find a good qualitative agreement, peak in the real part of the self-energy a
 \section*{Exercise 4: Phononic spectral function of MgB$_2$}
 
 In this example, we calculate the phonon spectral function of MgB$_2$.
-We mostly highlight the specificity of phonon spectral function calculations and it is therefore advised to first do exercise 2.
+We mostly highlight the specifics of phonon spectral function calculations and it is therefore advised to first do Exercise 2.
 
 The 1-loop (1L) contribution to the phonon self-energy is given by\footnote{M.\ Calandra \textit{et al}., \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.82.165111}{Phys.\ Rev.\ B \textbf{82}, 165111 (2010)}, J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}}
 \begin{equation} \label{eq:phself}
@@ -1484,9 +1483,8 @@ The unscreened self-energy entering Eq.~\eqref{eq:phspec} is then $\Delta\Pi_\qn
 \vspace{0.2cm}
 
 The output can be parsed and visualized using the \program{plot.py} script.
-The script implements Eq.~\eqref{eq:phspec} for the calculation of the self-energy.
+The script implements Eq.~\eqref{eq:phspec} for the calculation of the spectral function.
 As in the electronic case, we linearly interpolate the self-energy in frequency.
-(See Appendix~2 for the full script.)
 (If you get \texttt{ModuleNotFoundError}, make sure you have loaded the python module and install the matplotlib package (see page 15).)
 
 \begin{verbatim}
@@ -1504,7 +1502,7 @@ The result looks as follows:
 The red dashed curves show the high-temperature phonon dispersion computed using DFPT, the orange dash-dotted curves the low-temperature static phonon dispersion, and the background color the low-temperature spectral function.
 One finds that the phonon spectral function is broadened and shifted due to the electron-phonon interaction.
 The integral of the spectral function should give the number of phonon modes in the system.
-Here, the frequency and $\mb{k}$-point mesh is too coarse, so the integral is not exactly 9 but oscillates around 9.
+Here, the frequency and $\mb{k}$-point mesh are too coarse, so the integral is not exactly 9 but oscillates around 9.
 
 \vspace{0.2cm}
 
@@ -1518,285 +1516,5 @@ Using a denser $60\times60\times60$ $\mb{k}$-point grid and 500 frequency points
 \action Try to increase the number of frequency grid points and the number of $\mb{k}$ points to converge the spectral function and the integral.
 
 \action Try to change the temperature and see the temperature dependence of the spectral function.
-
-
-\clearpage
-
-\section*{Appendix 1: Plotting script for the electron self-energy}
-\begin{scriptsize}
-\begin{Verbatim}[frame=single]
-#!/usr/bin/env python3
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.image import NonUniformImage
-
-plt.rcParams.update({'font.size': 15})
-
-def parse_epw_selfen(filename, nk, nbnd):
-    xks = np.zeros((3, nk))
-    energy = np.zeros((nbnd, nk))
-    sigma = np.zeros((nbnd, nk), dtype=complex)
-
-    with open(filename, 'r') as f:
-        for line in f:
-            if "Electron Self-Energy using Wannier function perturbation theory" in line:
-                break
-        print(f.readline())
-        f.readline()
-        f.readline()
-        for ik in range(nk):
-            xks[:, ik] = [float(x) for x in f.readline().split()[-3:]]
-            f.readline()
-            for ib in range(nbnd):
-                data = f.readline().split()
-                energy[ib, ik] = float(data[3])
-                sigma[ib, ik] = float(data[6]) + 1j * float(data[9])
-            f.readline()
-            f.readline()
-            f.readline()
-
-    sigma /= 1000 # meV to eV
-    return xks, energy, sigma
-
-
-def parse_epw_specfun_sup(filename):
-    data = np.loadtxt(filename)
-    nk = int(data[-1, 0])
-    nbnd = int(data[-1, 1])
-
-    data = data.reshape(nbnd, nk, -1, 6)
-    ws = data[0, 0, :, 3]
-    es = data[:, :, 0, 2]
-    sigma = (data[:, :, :, 4] + 1j * data[:, :, :, 5]) / 1000 # meV to eV
-    return ws, es, sigma
-
-def parse_epw_specfun(filename):
-    data = np.loadtxt(filename)
-    nk = int(data[-1, 0])
-
-    data = data.reshape(nk, -1, 3)
-    ws = data[0, :, 1]
-    As = data[:, :, 2] * 1000  # 1/meV to 1/eV
-
-    n_int = []
-    with open(filename, "r") as f:
-        for line in f:
-            if "Integrated spectral function" in line:
-                n_int += [float(line.split()[-1])]
-    n_int = np.array(n_int)
-
-    return ws, As, n_int
-
-# -------------------------------------
-# Parse EPW output
-use_interpolation = True
-T = 300.0
-
-ws, es, sigma = parse_epw_specfun_sup(f"specfun_sup.elself.{T:.3f}K")
-ws, As, nocc = parse_epw_specfun(f"specfun.elself.{T:.3f}K")
-nbnd, nk, nfreq = sigma.shape
-
-xks, _, sigma_ahc = parse_epw_selfen("epw2.out", nk, nbnd)
-
-
-# -------------------------------------
-# Compute spectral function on a denser frequency grid using linear interpolation of the self-energy
-# A = 1 / (w - e - sigma)
-ws_itp = np.linspace(ws.min(), ws.max(), 10_000, True)
-dw = ws_itp[1] - ws_itp[0]
-fermi_dirac = 1 / (np.exp(ws_itp / (T * 8.61732814974056E-05)) + 1)
-
-nocc_itp = np.zeros((nk,))
-As_itp = np.zeros((nk, len(ws_itp)))
-for ik in range(nk):
-    for ib in range(nbnd):
-        sigma_itp = np.interp(ws_itp, ws, sigma[ib, ik, :])
-        As_itp[ik, :] += (1 / (ws_itp - es[ib, ik] - sigma_itp)).imag / np.pi
-    nocc_itp[ik] += np.sum(As_itp[ik, :] * fermi_dirac) * dw
-
-# -------------------------------------
-if use_interpolation:
-    # With interpolation
-    As_plot = As_itp
-    ws_plot = ws_itp
-    nocc_plot = nocc_itp
-
-else:
-    # Without interpolation
-    As_plot = As
-    ws_plot = ws
-    nocc_plot = nocc
-
-
-# Set x axis
-dks = np.linalg.norm(xks[:, 1:] - xks[:, :-1], axis=0)
-xs = np.concatenate(([0.], np.cumsum(dks)))
-
-fig, axes = plt.subplots(2, 2, figsize=(10, 6), sharex="col",
-    gridspec_kw={'height_ratios': [3, 1], "width_ratios":[1,0.02]})
-
-axes[1, 1].set_axis_off()
-
-# -------------------------------------
-# Plot spectral function
-plt.sca(axes[0, 0])
-im = NonUniformImage(axes[0, 0], interpolation='nearest',
-    extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()],
-    cmap="viridis", norm=plt.matplotlib.colors.LogNorm(vmin=0.01, vmax=10))
-im.set_data(xs, ws_plot, As_plot.T)
-axes[0, 0].add_image(im)
-cbar = plt.colorbar(im, cax=axes[0, 1])
-cbar.set_label("$A_{\mathbf{k}}(\omega)$ (1/eV)")
-
-# Plot bands
-for ibnd in range(nbnd):
-    plt.plot(xs, es[ibnd, :], "k-", lw=1)
-    plt.plot(xs, es[ibnd, :] + sigma_ahc[ibnd, :].real, "r-", lw=1)
-
-plt.axhline(0, c="grey", lw=1)
-plt.ylabel("$\omega - E_\mathrm{Fermi}$ (eV)")
-plt.ylim([ws_plot.min(), ws_plot.max()])
-
-# -------------------------------------
-# Plot integrated spectral function
-plt.sca(axes[1, 0])
-dw = ws_plot[1] - ws_plot[0]
-# plt.plot(xs, np.sum(As_plot, axis=1) * dw, label=r"$A(\omega)$")
-plt.plot(xs, nocc_plot, "-", label=r"$A(\omega) f_{\rm FD}(\omega)$", lw=2)
-plt.ylabel(r"$\int A(\omega) f_{\rm FD}(\omega) d\omega$")
-# plt.legend()
-
-plt.ylim([0, 6])
-for i in range(6):
-    plt.axhline(i, c="k", lw=0.5, ls="--")
-
-xs_highsym = xs[np.arange(0, 351, 50)]
-for x in xs_highsym:
-    for ax in axes[:, 0]:
-        ax.axvline(x, c="k", lw=1)
-plt.xticks(xs_highsym, ["$\Gamma$", "M", "K", "$\Gamma$", "A", "L", "H", "A"])
-plt.xlim([xs[0], xs[-1]])
-
-
-plt.tight_layout()
-fig.savefig("mgb2_spectral.pdf")
-
-axes[0, 0].set_ylim([-1.0, 1.5])
-fig.savefig("mgb2_spectral_zoom.pdf")
-#plt.show()
-\end{Verbatim}
-\end{scriptsize}
-
-
-\clearpage
-
-\section*{Appendix 2: Plotting script for the phonon self-energy}
-\begin{scriptsize}
-\begin{Verbatim}[frame=single]
-#!/usr/bin/env python3
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.image import NonUniformImage
-
-plt.rcParams.update({'font.size': 15})
-
-filename = "specfun_sup.phon"
-
-# --------------------------------------
-# Parse specfun_sup file (EPW v6.0+ layout, 9 columns)
-# Columns: Q  Mode  Temp[K]  smearing[eV]  w_q[eV]  w[eV]
-#          Re Pi(w,T_low)[meV]  Re Pi(0,T_high)[meV]  Im Pi(w,T_low)[meV]
-data = np.loadtxt(filename)
-nq = int(data[-1, 0])
-nmodes = int(data[-1, 1])
-
-# [iq, iw, imode, idata]
-data = data.reshape(nq, -1, nmodes, 9)
-ws = data[0, :, 0, 5] * 1e3  # eV to meV
-nw = len(ws)
-
-T_low = data[0, 0, 0, 2]
-w_ph = data[:, 0, :, 4] * 1e3  # eV to meV
-Pi_low = data[:, :, :, 6] + 1j * data[:, :, :, 8]
-Pi_high_0 = data[:, :, :, 7]
-Pi = Pi_low - Pi_high_0
-
-xks = np.loadtxt("qpt.txt", skiprows=1)[:, :3].T
-dks = np.linalg.norm(xks[:, 1:] - xks[:, :-1], axis=0)
-xs = np.concatenate(([0.], np.cumsum(dks)))
-
-ws_plot = np.linspace(ws.min(), ws.max(), 1_000, True)
-
-# --------------------------------------
-# Compute self-energy
-A = np.zeros((nq, len(ws_plot)))
-w_ph_low = np.zeros_like(w_ph)
-eta = 0.1 # meV
-
-for iq in range(nq):
-   for imode in range(nmodes):
-      wq = w_ph[iq, imode]
-
-      w2 = wq**2 + 2 * wq * Pi[iq, 0, imode]
-      w_ph_low[iq, imode] = np.sqrt(abs(w2).real) * np.sign(w2.real)
-
-      Pi_itp = np.interp(ws_plot, ws, Pi[iq, :, imode])
-
-      for iw in range(len(ws_plot)):
-         w = ws_plot[iw]
-         Pi_w = Pi_itp[iw]
-         A[iq, iw] += -np.imag(2 * w / ((w + 1j * eta)**2 - wq**2 - 2 * wq * Pi_w)) / np.pi
-
-A[A < 0] = 1e-10
-
-fig, axes = plt.subplots(2, 2, figsize=(10, 6), sharex="col",
-   gridspec_kw={'height_ratios': [3, 1], "width_ratios":[1,0.02]})
-axes[1, 1].set_axis_off()
-
-# -------------------------------------
-# Plot spectral function
-plt.sca(axes[0, 0])
-im = NonUniformImage(axes[0, 0], interpolation='nearest',
-   extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()], cmap="viridis",
-   norm=plt.matplotlib.colors.LogNorm(vmin=0.01, vmax=10))
-im.set_data(xs, ws_plot, A.T)
-axes[0, 0].add_image(im)
-cbar = plt.colorbar(im, cax=axes[0, 1])
-cbar.set_label("$A_{\mathbf{q}}(\omega)$ (1/meV)")
-
-# Plot bands
-for i in range(nmodes):
-   plt.plot(xs, w_ph[:, i], "r--", lw=1, label="DFPT (bare)" if i == 0 else None)
-   plt.plot(xs, w_ph_low[:, i], "-.", c="C1", lw=1, label=f"EPW T={T_low:.0f}K" if i == 0 else None)
-plt.legend(framealpha=1.0, loc="upper center", ncol=2)
-
-plt.axhline(0, c="grey", lw=1)
-plt.ylabel("$\omega$ (meV)")
-plt.ylim([ws_plot.min(), ws_plot.max()])
-
-# -------------------------------------
-# Plot integrated spectral function
-plt.sca(axes[1, 0])
-dw = ws_plot[1] - ws_plot[0]
-plt.plot(xs, np.sum(A, axis=1) * dw, "-", label=r"$A(\omega)$", lw=2)
-plt.ylabel(r"$\int A_{\mathbf{q}}(\omega) d\omega$")
-
-plt.ylim([0, 12])
-plt.yticks([0, 9])
-plt.axhline(9, c="k", ls="--")
-
-xs_highsym = xs[np.arange(0, 351, 50)]
-for x in xs_highsym:
-      for ax in axes[:, 0]:
-         ax.axvline(x, c="k", lw=1)
-plt.xticks(xs_highsym, ["$\Gamma$", "M", "K", "$\Gamma$", "A", "L", "H", "A"])
-plt.xlim([xs[0], xs[-1]])
-
-
-plt.tight_layout()
-fig.savefig("mgb2_phonon.pdf")
-#plt.show()
-\end{Verbatim}
-\end{scriptsize}
 
 \end{document}

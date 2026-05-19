@@ -35,3 +35,7 @@ workspace/
 # Build output for the handout. To version a PDF, copy it to a tracked path
 # (e.g., the repo root or a release/ directory) rather than committing this.
 document/main.pdf
+
+# Makefile artifacts (handout copy + code tarball produced by `make`)
+Thu.5.Lihm.pdf
+Thu.5.Lihm.tar
