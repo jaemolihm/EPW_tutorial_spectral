@@ -36,6 +36,27 @@ pdflatex main.tex   # second pass for \pageref{LastPage}
 LaTeX build artifacts (`*.aux`, `*.log`, `*.out`, etc.) are gitignored. The
 generated PDF is NOT gitignored — commit it intentionally when distributing.
 
+## Debugging workspace
+
+`workspace/` mirrors `code/` with every input file symlinked to its counterpart
+in `code/`. It is gitignored, so output files, scratch data, and QE `*.save`
+directories produced during a run never pollute the tracked tree.
+
+To run an exercise locally, work from the corresponding `workspace/exerciseN/`
+directory. New files created there (stdout logs, `*.save/`, `*.xml`, …) stay
+untracked. The symlinked input files resolve to `code/exerciseN/*`, so edits to
+inputs should be made in `code/`, not in `workspace/`.
+
+If `workspace/` is ever missing or out of sync with `code/`, recreate it:
+
+```bash
+find code -type d | sed 's|^code|workspace|' | xargs mkdir -p
+find code -type f | while read f; do
+  rel="${f#code/}"
+  ln -sf "$(pwd)/$f" "workspace/$rel"
+done
+```
+
 ## Running the exercises
 
 `code/run.sh` targets Stampede3 (SLURM, `ibrun`, `-A DMR23030`, `skx`
