@@ -5,6 +5,9 @@ from matplotlib.image import NonUniformImage
 
 plt.rcParams.update({'font.size': 15})
 
+ZOOM_EMIN = -1.0  # eV
+ZOOM_EMAX =  1.5  # eV
+
 def parse_epw_selfen(filename, nk, nbnd):
     xks = np.zeros((3, nk))
     energy = np.zeros((nbnd, nk))
@@ -115,20 +118,27 @@ axes[1, 1].set_axis_off()
 plt.sca(axes[0, 0])
 im = NonUniformImage(axes[0, 0], interpolation='nearest',
     extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()],
-    cmap="viridis", norm=plt.matplotlib.colors.LogNorm(vmin=0.01, vmax=10))
+    cmap="Blues", norm=plt.matplotlib.colors.LogNorm(vmin=0.01, vmax=10))
 im.set_data(xs, ws_plot, As_plot.T)
 axes[0, 0].add_image(im)
 cbar = plt.colorbar(im, cax=axes[0, 1])
 cbar.set_label("$A_{\mathbf{k}}(\omega)$ (1/eV)")
 
+black_label = r"$\varepsilon_{n\mathbf{k}}^{\rm DFT}$"
+red_label = (r"$\varepsilon_{n\mathbf{k}}^{\rm DFT} + \mathrm{Re}\,"
+             r"\Sigma_{n\mathbf{k}}(\omega = \varepsilon_{n\mathbf{k}}^{\rm DFT})$")
+
 # Plot bands
 for ibnd in range(nbnd):
-    plt.plot(xs, es[ibnd, :], "k-", lw=1)
-    plt.plot(xs, es[ibnd, :] + sigma_ahc[ibnd, :].real, "r-", lw=1)
+    plt.plot(xs, es[ibnd, :], "k-", lw=1,
+             label=black_label if ibnd == 0 else None)
+    plt.plot(xs, es[ibnd, :] + sigma_ahc[ibnd, :].real, "r-", lw=1,
+             label=red_label if ibnd == 0 else None)
 
 plt.axhline(0, c="grey", lw=1)
 plt.ylabel("$\omega - E_\mathrm{Fermi}$ (eV)")
 plt.ylim([ws_plot.min(), ws_plot.max()])
+plt.legend(fontsize=9, loc="upper right")
 
 # -------------------------------------
 # Plot integrated spectral function
@@ -153,7 +163,38 @@ plt.xlim([xs[0], xs[-1]])
 
 plt.tight_layout()
 fig.savefig("mgb2_spectral.pdf")
+print("Saved figure to mgb2_spectral.pdf")
 
-axes[0, 0].set_ylim([-1.0, 1.5])
-fig.savefig("mgb2_spectral_zoom.pdf")
+# -------------------------------------
+# Zoom: re-plot spectral function on its own figure (no integral panel)
+fig_zoom, axes_zoom = plt.subplots(1, 2, figsize=(10, 5),
+    gridspec_kw={"width_ratios": [1, 0.02]})
+
+plt.sca(axes_zoom[0])
+im_zoom = NonUniformImage(axes_zoom[0], interpolation='nearest',
+    extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()],
+    cmap="Blues", norm=plt.matplotlib.colors.LogNorm(vmin=0.01, vmax=10))
+im_zoom.set_data(xs, ws_plot, As_plot.T)
+axes_zoom[0].add_image(im_zoom)
+cbar_zoom = plt.colorbar(im_zoom, cax=axes_zoom[1])
+cbar_zoom.set_label("$A_{\mathbf{k}}(\omega)$ (1/eV)")
+
+for ibnd in range(nbnd):
+    plt.plot(xs, es[ibnd, :], "k-", lw=1,
+             label=black_label if ibnd == 0 else None)
+    plt.plot(xs, es[ibnd, :] + sigma_ahc[ibnd, :].real, "r-", lw=1,
+             label=red_label if ibnd == 0 else None)
+
+plt.axhline(0, c="grey", lw=1)
+plt.ylabel("$\omega - E_\mathrm{Fermi}$ (eV)")
+plt.ylim([ZOOM_EMIN, ZOOM_EMAX])
+plt.legend(fontsize=9, loc="upper right")
+
+for x in xs_highsym:
+    axes_zoom[0].axvline(x, c="k", lw=1)
+plt.xticks(xs_highsym, ["$\Gamma$", "M", "K", "$\Gamma$", "A", "L", "H", "A"])
+plt.xlim([xs[0], xs[-1]])
+
+fig_zoom.savefig("mgb2_spectral_zoom.pdf")
+print("Saved figure to mgb2_spectral_zoom.pdf")
 #plt.show()
