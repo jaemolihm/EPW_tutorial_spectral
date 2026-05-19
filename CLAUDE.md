@@ -10,7 +10,9 @@ Quantum ESPRESSO and EPW. Carried over from the 2024 tutorial (commit 7ccad8a
 - `code/` — input files for the hands-on exercises, organized per exercise.
   - `exercise1/` — diamond AHC / WFPT band-structure renormalization.
   - `exercise2/` — MgB$_2$ electron spectral function.
-  - `exercise3/` — MgB$_2$ phonon spectral function.
+  - `exercise3/` — graphene electron spectral function (doped, with
+    bare-band shift).
+  - `exercise4/` — MgB$_2$ phonon spectral function.
   - `run.sh` — example SLURM batch script (Stampede3, `pw.x` + `ph.x`).
   - Each exercise directory holds the QE/EPW inputs (`scf.in`, `nscf.in`,
     `ph.in`, `pp.in`, `epw*.in`, `ahc.in`, …), pseudopotentials (`*.UPF`),
@@ -22,6 +24,10 @@ Quantum ESPRESSO and EPW. Carried over from the 2024 tutorial (commit 7ccad8a
     `\mb`, `\todo`, `\qnu`) live in `main.tex`, not here, so `settings.tex`
     can be kept in sync with the school-wide template.
   - Built PDF is `main.pdf`.
+- `tutorial.pdf` — versioned snapshot of the handout at the repo root
+  (the build output `document/main.pdf` itself is gitignored).
+- `Makefile` — packages the handout + code for distribution
+  (see "Packaging for distribution" below).
 
 ## Building the handout
 
@@ -37,6 +43,19 @@ LaTeX build artifacts (`*.aux`, `*.log`, `*.out`, etc.) and `document/main.pdf`
 itself are gitignored. To version a specific PDF (e.g., the distributed
 handout), copy it to a tracked path outside `document/` rather than
 un-ignoring the build output.
+
+## Packaging for distribution
+
+`make` at the repo root produces the two artifacts students receive:
+
+- `Thu.5.Lihm.pdf` — copy of `document/main.pdf`.
+- `Thu.5.Lihm.tar` — tarball of `code/` renamed so it extracts to
+  `Thu.5.Lihm/exercise1`, `…/exercise2`, etc. (uses a temporary symlink
+  + `tar -ch` so it works with BSD `tar` on macOS).
+
+Targets: `make pdf`, `make tar`, `make clean`. Both artifacts are
+gitignored. `make pdf` rebuilds the handout via `pdflatex` if
+`main.tex`/`settings.tex` are newer than `document/main.pdf`.
 
 ## Debugging workspace
 
