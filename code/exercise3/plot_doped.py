@@ -10,7 +10,7 @@ plt.rcParams.update({'font.size': 15})
 
 PLOT_EMIN = -0.40  # eV
 PLOT_EMAX =  0.40  # eV
-E_SHIFT = -0.065   # eV, rigid shift applied to DFT band for shifted plot
+E_SHIFT = -0.040   # eV, rigid shift applied to DFT band for shifted plot
 
 K = np.array([1/3, 1/3, 0.0])
 
