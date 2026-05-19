@@ -1,0 +1,32 @@
+&control
+   calculation  = 'scf'
+   prefix       = 'graphene'
+   pseudo_dir   = './'
+   outdir       = './'
+   tprnfor      = .true.
+   tstress      = .true.
+/
+&system
+   ibrav        = 4
+   celldm(1)    = 4.654
+   celldm(3)    = 5.0
+   nat          = 2
+   ntyp         = 1
+   ecutwfc      = 60.0
+   occupations  = 'smearing'
+   smearing     = 'mv'
+   degauss      = 0.02
+   assume_isolated = '2D'
+/
+&electrons
+   mixing_beta     = 0.7
+   mixing_mode     = 'local-TF'
+   conv_thr        = 1.0d-15
+/
+ATOMIC_SPECIES
+   C   12.011  C.dojo.sr.ONCVv0.5.pbe.standard.upf
+ATOMIC_POSITIONS crystal
+   C        0.333333333   0.666666667   0.000000000
+   C        0.666666667   0.333333333   0.000000000
+K_POINTS AUTOMATIC
+   12 12 1 0 0 0

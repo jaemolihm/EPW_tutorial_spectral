@@ -1,0 +1,49 @@
+--
+&inputepw
+  prefix      = 'graphene'
+  outdir      = './'
+  dvscf_dir   = './save'
+  etf_mem     =  0
+
+  elph        = .true.
+  use_ws      = .true.
+  epbwrite    = .true.
+  epwwrite    = .true.
+
+  ! --- Input variables for WFPT ---
+  lwfpt       = .true.
+  ahc_nbnd    = 12
+  ahc_win_max = -1.0
+  ahc_win_min = -6.5
+
+  wannierize  = .true.
+  nbndsub     =  2
+
+  num_iter      = 200
+  wdata(1)      = 'dis_num_iter = 200'
+  dis_win_min   = -12.0                      ! Remove for 5-band WFs
+  dis_froz_min  =  -6.5                      ! Remove for 5-band WFs
+  dis_win_max   =   8.0
+  dis_froz_max  =  -1.0
+  proj(1)       = 'C:pz'
+  !proj(2)       = 'f = 0.5, 0.5, 0.0 : s'   ! uncomment for 5-band WFs
+  !proj(3)       = 'f = 0.5, 0.0, 0.0 : s'   ! uncomment for 5-band WFs
+  !proj(4)       = 'f = 0.0, 0.5, 0.0 : s'   ! uncomment for 5-band WFs
+  bands_skipped = ''
+
+  nk1         = 12
+  nk2         = 12
+  nk3         = 1
+
+  nq1         = 6
+  nq2         = 6
+  nq3         = 1
+
+  nkf1        = 1
+  nkf2        = 1
+  nkf3        = 1
+
+  nqf1        = 1
+  nqf2        = 1
+  nqf3        = 1
+/
