@@ -586,8 +586,8 @@ With our settings, you should get the following figure (black: indirect gap, red
   xlabel={$T$ (K)},
   ylabel={Band gap renormalization (meV)},
 ]
-\addplot[black,mark=*,mark size=2pt] table[x index=0,y index=1] {data1.txt};
-\addplot[red, mark=*,mark size=2pt] table[x index=0,y index=2] {data1.txt};
+\addplot[black,mark=*,mark size=2pt] table[x index=0,y index=1] {assets/data1.txt};
+\addplot[red, mark=*,mark size=2pt] table[x index=0,y index=2] {assets/data1.txt};
 \end{axis}
 \end{tikzpicture}
 \end{center}
@@ -598,7 +598,7 @@ With our settings, you should get the following figure (black: indirect gap, red
 At convergence you should get~\footnote{The figure is from S.\ Ponc\'e \textit{et al}., \href{https://doi.org/10.1063/1.4927081}{J.\ Chem.\ Phys.\ \textbf{143}, 102813 (2015)}}:
 \begin{center}
 \vspace{0.2cm}
-\includegraphics[width=0.8\textwidth]{figures/diamond_gap.png}
+\includegraphics[width=0.8\textwidth]{assets/figures/diamond_gap.png}
 \vspace{0.1cm}
 \end{center}
 
@@ -1020,7 +1020,7 @@ The script will create two pdf files, \texttt{mgb2\_spectral.pd} and \texttt{mgb
 
 \begin{center}
     \vspace{0.2cm}
-    \includegraphics[width=0.9\textwidth]{figures/mgb2_spectral.pdf}
+    \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_spectral.pdf}
     \vspace{0.1cm}
 \end{center}
 The upper panel shows the electron spectral function as the background color.
@@ -1032,7 +1032,7 @@ This value changes when the dispersion crosses the Fermi level.
 Zooming in near the Fermi level, we can see the phonon induced renormalization of the electron dispersion: the red curve is the renormalized band structure, and the black curve is the bare band structure.
 \begin{center}
    \vspace{0.2cm}
-   \includegraphics[width=0.9\textwidth]{figures/mgb2_spectral_zoom.pdf}
+   \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_spectral_zoom.pdf}
    \vspace{0.1cm}
 \end{center}
 
@@ -1041,7 +1041,7 @@ The calculation is not fully converged and the spectral function is not yet smoo
 Using a denser 20$\times$20$\times$20 $\mb{q}$-point grid and 500 frequency points, we have:
 \begin{center}
    \vspace{0.2cm}
-   \includegraphics[width=0.9\textwidth]{figures/mgb2_spectral_zoom_dense.pdf}
+   \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_spectral_zoom_dense.pdf}
    \vspace{0.1cm}
 \end{center}
 
@@ -1317,7 +1317,7 @@ The result looks as follows:
 
 \begin{center}
    \vspace{0.2cm}
-   \includegraphics[width=0.9\textwidth]{figures/mgb2_phonon.pdf}
+   \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_phonon.pdf}
    \vspace{0.1cm}
 \end{center}
 
@@ -1331,7 +1331,7 @@ Here, the frequency and $\mb{k}$-point mesh is too coarse, so the integral is no
 Using a denser $60\times60\times60$ $\mb{k}$-point grid and 500 frequency points, we have:
 \begin{center}
    \vspace{0.2cm}
-   \includegraphics[width=0.9\textwidth]{figures/mgb2_phonon_dense.pdf}
+   \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_phonon_dense.pdf}
    \vspace{0.1cm}
 \end{center}
 
