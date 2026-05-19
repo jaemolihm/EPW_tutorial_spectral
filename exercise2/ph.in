@@ -1,0 +1,13 @@
+--
+&inputph
+    prefix    = 'mgb2'
+    fildyn    = 'mgb2.dyn.xml'
+    fildvscf  = 'dvscf'
+    tr2_ph    =  1.0d-20
+    ldisp     = .true.
+    reduce_io = .true.
+    nmix_ph   = 12
+    nq1 = 3
+    nq2 = 3
+    nq3 = 3
+/

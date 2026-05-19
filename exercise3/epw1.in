@@ -1,0 +1,39 @@
+--
+&inputepw
+  prefix      = 'mgb2'
+  outdir      = './'
+  dvscf_dir   = './save'
+  etf_mem     =  1
+
+  elph        = .true.
+  use_ws      = .true.
+  epbwrite    = .true.
+  epwwrite    = .true.
+
+  wannierize  = .true.
+  nbndsub     =  5
+
+  num_iter      = 500
+  dis_froz_max  = 8.8
+  proj(1)       = 'B:pz'
+  proj(2)       = 'f=0.5,1.0,0.5:s'
+  proj(3)       = 'f=0.0,0.5,0.5:s'
+  proj(4)       = 'f=0.5,0.5,0.5:s'
+  bands_skipped = 'exclude_bands = 10-12'
+
+  nk1         = 6
+  nk2         = 6
+  nk3         = 6
+
+  nq1         = 3
+  nq2         = 3
+  nq3         = 2
+
+  nkf1        = 1
+  nkf2        = 1
+  nkf3        = 1
+
+  nqf1        = 1
+  nqf2        = 1
+  nqf3        = 1
+/

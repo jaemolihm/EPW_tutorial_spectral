@@ -1,0 +1,57 @@
+--
+&inputepw
+  prefix      = 'diamond'
+  amass(1)    = 12.011
+  outdir      = './'
+  dvscf_dir   = './save/'
+  elph        = .true.
+  etf_mem     = 0
+  lopt_w2b    = .true.
+
+  ! --- Input variables for WFPT ---
+  lwfpt       = .true.
+  ahc_nbnd    = 8
+  ahc_win_max = 23.0
+  ahc_win_min = -100.0
+
+  ! --- Input variables for electron self-energy ---
+  elecselfen = .true.
+  filkf      = './kpt.txt'
+  nqf1       = 10
+  nqf2       = 10
+  nqf3       = 10
+  degaussw   = 0.02 ! eV
+  temps      = 0.0 ! Kelvin
+  ! ------------------------------------------------
+
+  efermi_read = .true.
+  fermi_energy = 15.0
+
+  use_ws = .true.
+  lpolar = .true.
+  vme    = 'wannier'
+
+  ! For the first-time, perform Wannierization of the electrons
+  ! and the electron-phonon matrix elements
+  wannierize = .true.
+  epbwrite = .true.
+  epwwrite = .true.
+
+  ! To restart from the real-space matrix elements
+  !wannierize = .false.
+  !epwread = .true.
+
+  nbndsub     = 8
+  num_iter    = 200
+  proj(1)     = 'C:sp3'
+  wdata(1)    = 'conv_tol = 1.d-10'
+  wdata(2)    = 'conv_window = 5'
+
+  nk1         = 4
+  nk2         = 4
+  nk3         = 4
+
+  nq1         = 4
+  nq2         = 4
+  nq3         = 4
+ /

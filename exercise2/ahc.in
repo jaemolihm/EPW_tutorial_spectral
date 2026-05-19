@@ -1,0 +1,17 @@
+--
+&inputph
+  prefix    = 'mgb2'
+  reduce_io = .true.
+  fildyn    = 'mgb2_ahc.dyn.xml'
+  ldisp     = .true.
+  fildvscf  = 'dvscf'
+  nq1 = 3
+  nq2 = 3
+  nq3 = 3
+
+  ! Input variables for Allen-Heine-Cardona calculation
+  electron_phonon = 'ahc'
+  trans           = .false.
+  ahc_nbnd        = 9
+  ahc_dir         = './save/ahc_dir/'
+ /
