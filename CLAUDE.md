@@ -33,8 +33,10 @@ pdflatex main.tex
 pdflatex main.tex   # second pass for \pageref{LastPage}
 ```
 
-LaTeX build artifacts (`*.aux`, `*.log`, `*.out`, etc.) are gitignored. The
-generated PDF is NOT gitignored — commit it intentionally when distributing.
+LaTeX build artifacts (`*.aux`, `*.log`, `*.out`, etc.) and `document/main.pdf`
+itself are gitignored. To version a specific PDF (e.g., the distributed
+handout), copy it to a tracked path outside `document/` rather than
+un-ignoring the build output.
 
 ## Debugging workspace
 

@@ -31,3 +31,7 @@
 
 # Local debugging workspace (mirrors code/ via symlinks; outputs not tracked)
 workspace/
+
+# Build output for the handout. To version a PDF, copy it to a tracked path
+# (e.g., the repo root or a release/ directory) rather than committing this.
+document/main.pdf
