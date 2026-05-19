@@ -14,8 +14,8 @@ filename = "specfun_sup.phon"
 data = np.loadtxt(filename)
 nq = int(data[-1, 0])
 nmodes = int(data[-1, 1])
-nT = np.unique(data[:, 2]).size  # number of temperatures
 
+nT = np.unique(data[:, 2]).size  # number of temperatures
 # [iq, iT, iw, imode, idata]
 data = data.reshape(nq, nT, -1, nmodes, 9)
 ws = data[0, 0, :, 0, 5] * 1e3  # eV to meV
@@ -74,7 +74,7 @@ cbar.set_label("$A_{\mathbf{q}}(\omega)$ (1/meV)")
 # Plot bands
 for i in range(nmodes):
     plt.plot(xs, w_ph[:, i], "--", c="gray", lw=1, label=f"DFPT smearing 0.05 Ry" if i == 0 else None)
-    plt.plot(xs, w_ph_low[:, i], "-", c="b", lw=1, label=f"EPW T={T_low:.0f}K" if i == 0 else None)
+    plt.plot(xs, w_ph_low[:, i], "-", c="b", lw=1, label=f"EPW T={T_low:.0f} K" if i == 0 else None)
 plt.legend(framealpha=1.0, loc="upper center", ncol=2)
 
 plt.axhline(0, c="grey", lw=1)
