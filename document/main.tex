@@ -38,7 +38,7 @@ colframe=black,toprule=1.2pt,bottomrule=1.2pt,leftrule=1.2pt,rightrule=1.2pt,arc
 
 In this tutorial, we show how to compute the phonon-induced renormalization of electron band structure of diamond within the Allen--Heine--Cardona theory\footnote{P.\ B.\ Allen and V.\ Heine, \href{https://iopscience.iop.org/article/10.1088/0022-3719/9/12/013}{J.\ Phys.\ C, \textbf{9}, 2305 (1976)}, P.\ B.\ Allen and M.\ Cardona, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.23.1495}{Phys.\ Rev.\ B, \textbf{23}, 1495 (1981)}}
 using Wannier Function perturbation theory (WFPT)\footnote{J.-M.\ Lihm and C.-H.\ Park, \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.11.041053}{Phys.\ Rev.\ X \textbf{11}, 041053 (2021)}},
-and the electron and phonon spectral functions of MgB$_2$.
+the electron spectral function of MgB$_2$ and of graphene (with a comparison to the experimental self-energy extracted via \href{https://xarpes.readthedocs.io/en/latest}{xARPES}), and the phonon spectral function of MgB$_2$.
 
 
 You are advised to prepare the following script file, e.g. \texttt{run.sh}:
@@ -476,25 +476,25 @@ From the underlined numbers, we find that the renormalization of the valence ban
 \begin{Verbatim}[commandchars=\\\{\}]
 ik =       1 coord.:    0.0000000   0.0000000   0.0000000
 -------------------------------------------------------------------
-E(   1 )=  -23.097318 eV   Re[Sigma]= -0.64319...E+02 meV Im[Sigma]=  0.59261...E+00 meV     Z= ...
-E(   2 )=   -1.641768 eV   Re[Sigma]=  0.12473...E+03 meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
-E(   3 )=   -1.641768 eV   Re[Sigma]=  0.12473...E+03 meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
-E(   4 )=   -1.641768 eV   Re[Sigma]=  \underline{0.12473...E+03} meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
-E(   5 )=    4.020640 eV   Re[Sigma]= \underline{-0.35068...E+03} meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
-E(   6 )=    4.020640 eV   Re[Sigma]= -0.35068...E+03 meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
-E(   7 )=    4.020640 eV   Re[Sigma]= -0.35068...E+03 meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
+E(   1 )=  -23.097318 eV   Re[Sigma]= -0.64288...E+02 meV Im[Sigma]=  0.59261...E+00 meV     Z= ...
+E(   2 )=   -1.641768 eV   Re[Sigma]=  0.12458...E+03 meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
+E(   3 )=   -1.641768 eV   Re[Sigma]=  0.12458...E+03 meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
+E(   4 )=   -1.641768 eV   Re[Sigma]=  \underline{0.12458...E+03} meV Im[Sigma]=  0.13815...E+01 meV     Z= ...
+E(   5 )=    4.020640 eV   Re[Sigma]= \underline{-0.35000...E+03} meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
+E(   6 )=    4.020640 eV   Re[Sigma]= -0.35000...E+03 meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
+E(   7 )=    4.020640 eV   Re[Sigma]= -0.35000...E+03 meV Im[Sigma]=  0.91491...E+02 meV     Z= ...
 E(   8 )=   11.517629 eV   Re[Sigma]=  0.00000...E+00 meV Im[Sigma]=  0.24628...E+00 meV     Z= ...
 -------------------------------------------------------------------
 
 
 ik =       2 coord.:    0.3500000   0.0000000   0.3500000
 -------------------------------------------------------------------
-E(   1 )=  -18.740849 eV   Re[Sigma]= -0.74350...E+01 meV Im[Sigma]=  0.33020...E+02 meV     Z=  ...
-E(   2 )=   -9.321123 eV   Re[Sigma]= -0.38989...E+01 meV Im[Sigma]=  0.71024...E+02 meV     Z=  ...
-E(   3 )=   -7.102523 eV   Re[Sigma]= -0.55960...E+01 meV Im[Sigma]=  0.13225...E+03 meV     Z=  ...
-E(   4 )=   -7.102523 eV   Re[Sigma]= -0.55960...E+01 meV Im[Sigma]=  0.13225...E+03 meV     Z=  ...
-E(   5 )=    2.239900 eV   Re[Sigma]= \underline{-0.16700...E+03} meV Im[Sigma]=  0.11050...E+01 meV     Z=  ...
-E(   6 )=    5.097206 eV   Re[Sigma]= -0.14679...E+03 meV Im[Sigma]=  0.21412...E+03 meV     Z=  ...
+E(   1 )=  -18.740849 eV   Re[Sigma]= -0.74445...E+01 meV Im[Sigma]=  0.33020...E+02 meV     Z=  ...
+E(   2 )=   -9.321123 eV   Re[Sigma]= -0.39389...E+01 meV Im[Sigma]=  0.71024...E+02 meV     Z=  ...
+E(   3 )=   -7.102523 eV   Re[Sigma]= -0.56473...E+01 meV Im[Sigma]=  0.13225...E+03 meV     Z=  ...
+E(   4 )=   -7.102523 eV   Re[Sigma]= -0.56473...E+01 meV Im[Sigma]=  0.13225...E+03 meV     Z=  ...
+E(   5 )=    2.239900 eV   Re[Sigma]= \underline{-0.16705...E+03} meV Im[Sigma]=  0.11050...E+01 meV     Z=  ...
+E(   6 )=    5.097206 eV   Re[Sigma]= -0.14607...E+03 meV Im[Sigma]=  0.21412...E+03 meV     Z=  ...
 E(   7 )=   13.403539 eV   Re[Sigma]=  0.00000...E+00 meV Im[Sigma]=  0.21549...E+00 meV     Z=  ...
 E(   8 )=   13.403539 eV   Re[Sigma]=  0.00000...E+00 meV Im[Sigma]=  0.21549...E+00 meV     Z=  ...
 -------------------------------------------------------------------
@@ -512,25 +512,25 @@ One can find that the rest-space Fan and DW terms have large values with opposit
 \begin{Verbatim}[commandchars=\\\{\}]
 # Electron self-energy (meV) in the Allen-Heine-Cardona formalism at T = 0.000K
 #   ik  ibnd    E_nk (eV)  Re[Active_Fan]  Active_DW  Rest_Fan    Rest_DW      Im[Active_Fan] (meV)
-     1     1 -0.80973E+01 -0.71604E+02  0.87182E+01 -0.10433E+03  0.10289E+03  0.59261E+00
-     2     1 -0.37408E+01 -0.50846E+01  0.58749E+01 -0.19203E+03  0.18380E+03  0.33020E+02
+     1     1 -0.80973E+01 -0.71604E+02  0.87182E+01 -0.10430E+03  0.10289E+03  0.59261E+00
+     2     1 -0.37408E+01 -0.50846E+01  0.58749E+01 -0.19204E+03  0.18380E+03  0.33020E+02
 
-     1     2  0.13358E+02  0.97221E+02  0.28803E+02 -0.10153E+04  0.10140E+04  0.13815E+01
-     2     2  0.56788E+01 -0.10493E+02  0.16287E+02 -0.48840E+03  0.47871E+03  0.71024E+02
+     1     2  0.13358E+02  0.97221E+02  0.28803E+02 -0.10155E+04  0.10140E+04  0.13815E+01
+     2     2  0.56788E+01 -0.10493E+02  0.16287E+02 -0.48844E+03  0.47871E+03  0.71024E+02
 
-     1     3  0.13358E+02  0.97221E+02  0.28803E+02 -0.10153E+04  0.10140E+04  0.13815E+01
-     2     3  0.78974E+01 -0.30455E+02  0.84617E+02 -0.80246E+03  0.74271E+03  0.13225E+03
+     1     3  0.13358E+02  0.97221E+02  0.28803E+02 -0.10155E+04  0.10140E+04  0.13815E+01
+     2     3  0.78974E+01 -0.30455E+02  0.84617E+02 -0.80252E+03  0.74271E+03  0.13225E+03
 
-     1     4  0.13358E+02  0.97221E+02  0.28803E+02 -0.10153E+04  0.10140E+04  0.13815E+01
-     2     4  0.78974E+01 -0.30455E+02  0.84617E+02 -0.80246E+03  0.74271E+03  0.13225E+03
+     1     4  0.13358E+02  0.97221E+02  0.28803E+02 -0.10155E+04  0.10140E+04  0.13815E+01
+     2     4  0.78974E+01 -0.30455E+02  0.84617E+02 -0.80252E+03  0.74271E+03  0.13225E+03
 
-     1     5  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99682E+03  0.93145E+03  0.91491E+02
-     2     5  0.17239E+02 -0.31152E+02 -0.81005E+02 -0.41128E+03  0.35643E+03  0.11050E+01
+     1     5  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99613E+03  0.93145E+03  0.91491E+02
+     2     5  0.17239E+02 -0.31152E+02 -0.81005E+02 -0.41132E+03  0.35643E+03  0.11050E+01
 
-     1     6  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99682E+03  0.93145E+03  0.91491E+02
-     2     6  0.20097E+02  0.62796E+02 -0.11039E+03 -0.31412E+03  0.21492E+03  0.21412E+03
+     1     6  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99613E+03  0.93145E+03  0.91491E+02
+     2     6  0.20097E+02  0.62796E+02 -0.11039E+03 -0.31340E+03  0.21492E+03  0.21412E+03
 
-     1     7  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99682E+03  0.93145E+03  0.91491E+02
+     1     7  0.19020E+02 -0.25361E+03 -0.31710E+02 -0.99613E+03  0.93145E+03  0.91491E+02
      2     7  0.28403E+02  0.87698E+02 -0.17944E+02  0.00000E+00  0.00000E+00  0.21549E+00
 
      1     8  0.26517E+02  0.83752E+02 -0.15407E+03  0.00000E+00  0.00000E+00  0.24628E+00
@@ -598,7 +598,7 @@ With our settings, you should get the following figure (black: indirect gap, red
 At convergence you should get~\footnote{The figure is from S.\ Ponc\'e \textit{et al}., \href{https://doi.org/10.1063/1.4927081}{J.\ Chem.\ Phys.\ \textbf{143}, 102813 (2015)}}:
 \begin{center}
 \vspace{0.2cm}
-\includegraphics[width=0.8\textwidth]{assets/figures/diamond_gap.png}
+\includegraphics[width=0.8\textwidth]{assets/diamond_gap.png}
 \vspace{0.1cm}
 \end{center}
 
@@ -1020,7 +1020,7 @@ The script will create two pdf files, \texttt{mgb2\_spectral.pd} and \texttt{mgb
 
 \begin{center}
     \vspace{0.2cm}
-    \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_spectral.pdf}
+    \includegraphics[width=0.9\textwidth]{assets/mgb2_spectral.pdf}
     \vspace{0.1cm}
 \end{center}
 The upper panel shows the electron spectral function as the background color.
@@ -1032,7 +1032,7 @@ This value changes when the dispersion crosses the Fermi level.
 Zooming in near the Fermi level, we can see the phonon induced renormalization of the electron dispersion: the red curve is the renormalized band structure, and the black curve is the bare band structure.
 \begin{center}
    \vspace{0.2cm}
-   \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_spectral_zoom.pdf}
+   \includegraphics[width=0.9\textwidth]{assets/mgb2_spectral_zoom.pdf}
    \vspace{0.1cm}
 \end{center}
 
@@ -1041,7 +1041,7 @@ The calculation is not fully converged and the spectral function is not yet smoo
 Using a denser 20$\times$20$\times$20 $\mb{q}$-point grid and 500 frequency points, we have:
 \begin{center}
    \vspace{0.2cm}
-   \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_spectral_zoom_dense.pdf}
+   \includegraphics[width=0.9\textwidth]{assets/mgb2_spectral_zoom_dense.pdf}
    \vspace{0.1cm}
 \end{center}
 
@@ -1052,7 +1052,275 @@ Using a denser 20$\times$20$\times$20 $\mb{q}$-point grid and 500 frequency poin
 
 \newpage
 
-\section*{Exercise 3: Phononic spectral function of MgB$_2$}
+\section*{Exercise 3: Electronic spectral function of graphene}
+
+In this example, we compute the electron spectral function of graphene from electron-phonon coupling and compare it with self-energy extracted from the ARPES spectrum done in the \href{https://xarpes.readthedocs.io/en/latest/notebooks/graphene.html}{xARPES tutorial}.
+%
+The formalism and workflow are identical to Exercise~2, so we focus on the practical differences specific to graphene.
+
+\vspace{0.2cm}
+
+Graphene is a semimetal with a linear Dirac dispersion at the $K$ point.
+%
+Coupling to the in-plane $E_{2g}$ optical phonon ($\hbar \omega_{\rm ph} \approx 200$~meV) produces a kink in the renormalized band structure roughly one phonon energy below the Fermi level\footnote{See, e.g., A.\ Bostwick \textit{et al.}, \href{https://www.nature.com/articles/nphys477}{Nature Phys.\ \textbf{3}, 36 (2007)} and references therein.}.
+
+
+In the experiment of D.~Yu.~Usachov \textit{et al.}\footnote{D.~Yu.~Usachov \textit{et al.}, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.97.085132}{Phys.\ Rev.\ B \textbf{97}, 085132 (2018)}.}, the authors used Li adsorption to dope electrons into graphene, shifting the Fermi level upward by approximately $1.6$~eV, close to the van Hove singularity at the $M$ point.
+%
+Due to the large density of states near the van Hove singularity, the electron self-energy is strongly enhanced.
+%
+In this exercise, we will try to reproduce the experimental self-energy and the kink in the spectral function by rigidly shifting the Fermi level in our calculation.
+
+\vspace{0.2cm}
+
+\action Go in the third exercise:
+\begin{verbatim}
+$ cd exercise3
+\end{verbatim}
+
+\action Run the preliminary \program{Quantum~ESPRESSO} and \program{EPW} steps. The flow mirrors Exercise~2: \texttt{pw.x}~$\to$~\texttt{ph.x}~$\to$~\texttt{pw.x} (nscf)~$\to$~\texttt{ph.x} (AHC)~$\to$~\texttt{epw.x} (WFPT).
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
+$ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ph.in > ph.out
+$ python3 $PATHQE/EPW/bin/pp.py < pp.in
+$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in nscf.in > nscf.out
+$ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ahc.in > ahc.out
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw1.in > epw1.out
+\end{verbatim}
+
+The input files follow the same patterns as in Exercise~2; the main differences are the 2D geometry (large out-of-plane lattice constant, $\mb{q}$-grid with \texttt{nq3 = 1}), a single carbon-$p_z$ Wannier function per atom for the low-energy bands, and a smaller frozen / disentanglement window centered around the Dirac point.
+
+\vspace{0.5cm}
+
+First, let us compute the electron spectral function for intrinsic graphene, with the Fermi level set at the Dirac point.
+
+\vspace{0.2cm}
+
+\action Compute the electron self-energy and spectral function on a high-symmetry $\mb{k}$-path with the \program{EPW} restart calculation.
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw2.in > epw2.out
+\end{verbatim}
+
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+--                                                                                                 epw2.in
+&inputepw
+  prefix      = 'graphene'
+  outdir      = './'
+  dvscf_dir   = './save'
+  etf_mem     =  0
+  lopt_w2b    = .true.
+
+  elph        = .true.
+  use_ws      = .true.
+  epwread     = .true.
+
+  ! --- Input variables for WFPT ---
+  lwfpt       = .true.
+  ahc_nbnd    = 12
+  ahc_win_max = -1.0      ! absolute energy (eV)
+  ahc_win_min = -6.5      ! absolute energy (eV)
+
+  ! --- Input variables for electron self-energy ---
+  elecselfen = .true.
+  filkf      = './kpt.txt'
+  nqf1       = 120
+  nqf2       = 120
+  nqf3       = 1
+  degaussw   = 0.05       ! eV
+  temps      = 300.0      ! Kelvin
+
+  ! --- Input variables for electron spectral function ---
+  specfun_el   = .true.
+  wmax_specfun =  4.0     ! eV (relative to Fermi energy)
+  wmin_specfun = -4.0     ! eV (relative to Fermi energy)
+  nw_specfun   = 200
+  ! ------------------------------------------------------
+
+  nbndsub     =  2
+
+  efermi_read  = .true.
+  fermi_energy = -4.1872
+
+  nk1         = 12
+  nk2         = 12
+  nk3         = 1
+
+  nq1         = 6
+  nq2         = 6
+  nq3         = 1
+/
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{footnotesize}
+   {\bf Notes}
+   \begin{itemize}
+      \item \texttt{ahc\_win\_min} and \texttt{ahc\_win\_max} define the AHC active window and are given in \textbf{absolute} energy (eV), on the same scale as the Kohn--Sham eigenvalues printed by \program{pw.x}. They should bracket the bands for which WFPT computes the Sternheimer corrections.
+      \item \texttt{wmin\_specfun} and \texttt{wmax\_specfun}, in contrast, define the frequency window for the spectral function and are given \textbf{relative to the Fermi energy} \texttt{fermi\_energy}. Here we sample $[-4.0,\,4.0]$~eV around $E_{\rm F}$, which captures the Dirac point and the phonon-induced kink as well as the van Hove singularity at the $M$ point upon shifting.
+   \end{itemize}
+\end{footnotesize}
+
+\vspace{0.3cm}
+
+\action Plot the spectral function with \texttt{plot.py}
+
+\begin{verbatim}
+$ python3 plot.py
+\end{verbatim}
+
+The intrinsic-graphene result reproduces the linear Dirac dispersion with phonon-induced broadening.
+%
+Note that the broadening is the weakest near the Dirac point, where the density of states vanishes, and increases away from the Dirac point as the density of states increases.
+%
+The calculated result is reliable only inside the AHC active window, which is indicated by the horizontal dashed lines.
+\begin{center}
+   \vspace{0.2cm}
+   \includegraphics[width=0.6\textwidth]{assets/graphene_spectral.pdf}
+   \vspace{0.1cm}
+\end{center}
+
+
+\vspace{0.2cm}
+
+\paragraph{Doped graphene and comparison with xARPES.}
+
+To mimic the Li-doped graphene of Usachov \textit{et al.}, we rigidly shift the Fermi level upward by about $1.6$~eV (to \texttt{fermi\_energy = -2.5341}~eV, close to the van Hove singularity at $M$) and recompute the spectral function on a $\mb{k}$-path zoomed near $K$ with a denser $\mb{q}$-grid and a smaller smearing.
+
+\begin{verbatim}
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw3.in > epw3.out
+$ python3 plot.py
+\end{verbatim}
+
+\begin{scriptsize}
+\begin{Verbatim}[frame=single]
+--                                                                                                 epw3.in
+&inputepw
+  prefix      = 'graphene'
+  outdir      = './'
+  dvscf_dir   = './save'
+  etf_mem     =  0
+  lopt_w2b    = .true.
+
+  elph        = .true.
+  use_ws      = .true.
+  epwread     = .true.
+
+  ! --- Input variables for WFPT ---
+  lwfpt       = .true.
+  ahc_nbnd    = 12
+  ahc_win_max = -1.0
+  ahc_win_min = -6.5
+
+  ! --- Input variables for electron self-energy ---
+  elecselfen = .true.
+  filkf      = './kpt_near_K.txt'
+  nqf1       = 240
+  nqf2       = 240
+  nqf3       = 1
+  degaussw   = 0.005  ! eV
+  temps      = 300.0  ! Kelvin
+
+  ! --- Input variables for electron spectral function ---
+  specfun_el   = .true.
+  wmax_specfun =  1.0     ! eV (relative to Fermi energy)
+  wmin_specfun = -1.0     ! eV (relative to Fermi energy)
+  nw_specfun   = 200
+  ! ------------------------------------------------------
+
+  nbndsub     =  2
+
+  efermi_read  = .true.
+  fermi_energy = -2.5341  ! shifted up by ~1.6 eV (van Hove at M)
+
+  nk1         = 12
+  nk2         = 12
+  nk3         = 1
+
+  nq1         = 6
+  nq2         = 6
+  nq3         = 1
+/
+\end{Verbatim}
+\end{scriptsize}
+
+\begin{footnotesize}
+   {\bf Notes}:
+   \begin{itemize}
+      \item \texttt{ahc\_win\_min/max} are unchanged: the AHC window is fixed by the band structure and does not move with the Fermi level.
+      \item \texttt{fermi\_energy} only relocates the spectral function frequency window $[\texttt{wmin\_specfun},\,\texttt{wmax\_specfun}]$ (now $[-1.0,\,1.0]$~eV around the shifted $E_{\rm F}$).
+      \item We refine the BZ integration (\texttt{nqf1=nqf2=240}, \texttt{degaussw=0.005}~eV) to resolve the strongly-enhanced self-energy near the van Hove singularity.
+      \item \texttt{filkf = `./kpt\_near\_K.txt'} samples a short $\mb{k}$-path near $K$ to focus on the kink region. You may generate different $\mb{k}$ paths by running \texttt{python generate\_k.py k0 k1 N} (see the header of the file for details).
+   \end{itemize}
+\end{footnotesize}
+
+\vspace{0.3cm}
+
+Re-running \program{epw.x} and plotting by \program{plot\_dense.py}, the phonon-induced kink near $\hbar\omega_{\rm ph} \approx 200~\mathrm{meV}$ above and below the shifted $E_{\rm F}$ is now clearly visible in the \texttt{graphene\_spectral\_doped.pdf} file:
+\begin{center}
+   \vspace{0.2cm}
+   \includegraphics[width=0.6\textwidth]{assets/graphene_spectral_doped.pdf}
+   \vspace{0.1cm}
+\end{center}
+
+
+In the plot above, the bare bands are the DFT band structure interpolated using Wannier functions.
+%
+You can note that this band is slightly shifted with respect to the calculated spectral function.
+%
+This is because there are static electron-phonon renormalization effects that are not included in the bare band.
+%
+In the experiments, the bare band is not directly accessible and is extracted by fitting the high-energy part of the ARPES spectrum, which also includes the static renormalization effects.
+%
+In order to mimic this procedure, we manually shift the bare band down by about 40~meV to match the high-energy part of the spectral function, and plot it together with the renormalized band (red) in \texttt{graphene\_spectral\_doped\_shifted\_band.pdf}.
+%
+We now see that the bare band align well with the spectral function at the Fermi level, and the velocity renormalization and kink appears approximately symmetric with respect to the Fermi level.
+
+\begin{center}
+   \vspace{0.2cm}
+   \includegraphics[width=0.6\textwidth]{assets/graphene_spectral_doped_shifted_band.pdf}
+   \vspace{0.1cm}
+\end{center}
+
+
+The velocity renormalization and kink are caused by the characteristic frequency dependence of the electron self-energy.
+%
+\texttt{graphene\_selfenergy\_doped.pdf} shows the self-energy for the $\mb{k}$ point at the Fermi level.
+%
+The real and imaginary parts of the calculated self-energy can be compared with those extracted from experiment using the xARPES code\footnote{\url{https://xarpes.readthedocs.io/en/latest/notebooks/graphene.html}}, which are shown in the right panel of the figure below (right).
+\begin{center}
+   \vspace{0.2cm}
+   \begin{minipage}[c]{0.64\textwidth}\centering
+      \includegraphics[width=\textwidth]{assets/graphene_selfenergy_doped.pdf}\\
+      {\footnotesize EPW (this tutorial)}
+   \end{minipage}\hfill
+   \begin{minipage}[c]{0.35\textwidth}\centering
+      \includegraphics[width=\textwidth]{assets/graphene_xarpes_selfen.png}\\
+      {\footnotesize xARPES reference}
+   \end{minipage}
+   \vspace{0.1cm}
+\end{center}
+
+We find a good qualitative agreement, peak in the real part of the self-energy at $\hbar\omega_{\rm ph} \approx 200$~meV, and a dip in the imaginary part of the self-energy at the same energy.
+
+\vspace{0.2cm}
+
+\action For the real part, the experimental data is positioned around zero, while our calculated self-energy is shifted down by about 40~meV. What is the origin of this shift?
+
+\action For the imaginary part, the calculation decays to nearly zero at the Fermi level, while the experimental data has a finite value. What could be the origin of this finite broadening in the experiment?
+
+\action Try estimating the electron-phonon coupling strength $\lambda$ from the velocity renormalization at the Fermi level, and compare with the experimental value extracted from the ARPES spectrum.
+
+\action Try shifting \texttt{fermi\_energy} by different amounts (e.g.\ $\pm 200$~meV from the Dirac point) and observe how the kink position tracks the Fermi level.
+
+\action Try calculations at different temperatures.
+
+
+\newpage
+
+\section*{Exercise 4: Phononic spectral function of MgB$_2$}
 
 In this example, we calculate the phonon spectral function of MgB$_2$.
 We mostly highlight the specificity of phonon spectral function calculations and it is therefore advised to first do exercise 2.
@@ -1084,144 +1352,29 @@ The phonon spectral function reads\footnote{P.\ B.\ Allen and R.\ Silberglitt, \
 
 \vspace{0.2cm}
 
-\action Make a self-consistent calculation, a phonon calculation, and an \program{EPW} calculation to transform electron-phonon matrix elements to real space.
+\paragraph{Reusing Exercise 2 inputs.}
+We reuse the \texttt{scf.in}, \texttt{ph.in}, \texttt{nscf.in}, and \texttt{epw1.in} files from Exercise 2 unchanged, with one exception: WFPT is not needed for the phonon spectral function, so in \texttt{epw1.in} we drop the WFPT-related variables
+(\texttt{lwfpt}, \texttt{ahc\_nbnd}, \texttt{ahc\_win\_min}, \texttt{ahc\_win\_max}).
+Refer back to Exercise 2 for the contents of \texttt{scf.in}, \texttt{ph.in}, \texttt{nscf.in}, and the rest of \texttt{epw1.in}.
 
+\vspace{0.2cm}
+
+\action Run the preliminary \program{Quantum~ESPRESSO} and \program{EPW} steps.
 
 \begin{verbatim}
 $ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
 $ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ph.in > ph.out
+$ python3 $PATHQE/EPW/bin/pp.py
 $ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in nscf.in > nscf.out
-$ python3 $PATHQE/EPW/bin/pp.py < pp.in
-$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 epw1.in > epw1.out
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw1.in > epw1.out
 \end{verbatim}
-
-\begin{scriptsize}
-\begin{Verbatim}[frame=single]
---                                                                                                  scf.in
-&control
-   calculation  = 'scf'
-   restart_mode = 'from_scratch'
-   prefix       = 'mgb2'
-   pseudo_dir   = './'
-   outdir       = './'
-/
-&system
-   ibrav        = 4
-   celldm(1)    = 5.8260252227888
-   celldm(3)    = 1.1420694129095
-   nat          = 3
-   ntyp         = 2
-   ecutwfc      = 40
-   smearing     = 'fermi-dirac'
-   occupations  = 'smearing
-   degauss      = 0.02
-/
-&electrons
-   diagonalization = 'david'
-   mixing_beta     = 0.7
-   conv_thr        = 1.0d-12
-/
-ATOMIC_SPECIES
-   Mg  24.305  Mg.pz-n-vbc.UPF
-   B   10.811  B.pz-vbc.UPF
-ATOMIC_POSITIONS crystal
-   Mg       0.000000000   0.000000000   0.000000000
-   B        0.333333333   0.666666667   0.500000000
-   B        0.666666667   0.333333333   0.500000000
-K_POINTS AUTOMATIC
-   12 12 8 0 0 0
-\end{Verbatim}
-\end{scriptsize}
-
-\begin{scriptsize}
-\begin{Verbatim}[frame=single]
---                                                                                                   ph.in
-&inputph
-    prefix    = 'mgb2'
-    fildyn    = 'mgb2.dyn.xml'
-    fildvscf  = 'dvscf'
-    tr2_ph    =  1.0d-20
-    ldisp     = .true.
-    reduce_io = .true.
-    nmix_ph   = 12
-    nq1 = 3
-    nq2 = 3
-    nq3 = 2
-/
-\end{Verbatim}
-\end{scriptsize}
-
-\begin{scriptsize}
-\begin{Verbatim}[frame=single]
---                                                                                                   pp.in
-mgb2
-\end{Verbatim}
-\end{scriptsize}
-
-\begin{scriptsize}
-\begin{Verbatim}[frame=single]
---                                                                                                 epw1.in
-&inputepw
-   prefix      = 'mgb2'
-   outdir      = './'
-   dvscf_dir   = './save'
-   etf_mem     =  0
-
-   elph        = .true.
-   use_ws      = .true.
-   epbwrite    = .true.
-   epwwrite    = .true.
-
-   wannierize  = .true.
-   nbndsub     =  5
-
-   num_iter      = 500
-   dis_froz_max  = 8.8
-   proj(1)       = 'B:pz'
-   proj(2)       = 'f=0.5,1.0,0.5:s'
-   proj(3)       = 'f=0.0,0.5,0.5:s'
-   proj(4)       = 'f=0.5,0.5,0.5:s'
-   bands_skipped = 'exclude_bands = 10-12'
-
-   nk1         = 6
-   nk2         = 6
-   nk3         = 6
-
-   nq1         = 3
-   nq2         = 3
-   nq3         = 2
-
-   nkf1        = 1
-   nkf2        = 1
-   nkf3        = 1
-
-   nqf1        = 1
-   nqf2        = 1
-   nqf3        = 1
-/
-\end{Verbatim}
-\end{scriptsize}
-
-
-The input files are similar to those used in Exercise 2, except for the following changes:
-\begin{footnotesize}
-\begin{itemize}
-   \item For \texttt{scf.in}, we use \texttt{smearing = `fermi-dirac'} instead of \texttt{smearing = `mp'}.
-   The reason is that EPW assumes Fermi--Dirac smearing in the phonon self-energy calculation.\footnote{The current version of EPW only supports Fermi--Dirac smearing in the phonon self-energy calculation. In the next release of EPW, we will support other smearing functions. We will also enable an option to automatize the ``unscreening'' of the phonon self-energy.}
-   \item To deal with the change in the smearing, we increased the $\mb{k}$ point grid to $12\times12\times8$ in \texttt{scf.in}.
-   \item To make the phonon calculation run faster, we reduced \texttt{nq3} to 2 in \texttt{ph.in} and \texttt{epw1.in}. This parameter should be larger ($\sim$10) in a real calculation.
-   \item For the \texttt{epw1.in} file, we remove input arguments related to WFPT.
-\end{itemize}
-\end{footnotesize}
-
-
 
 \vspace{0.5cm}
 
-\action Perform an \program{EPW} restart calculation to obtain the electron self-energy and spectral function for \textbf{k} along the same high-symmetry path
+\action Perform an \program{EPW} restart calculation to obtain the phonon self-energy and spectral function on a high-symmetry $\mb{q}$-point path.
 
 \begin{verbatim}
-$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 epw2.in > epw2.out
+$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw2.in > epw2.out
 \end{verbatim}
 
 \begin{scriptsize}
@@ -1250,13 +1403,13 @@ $ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 epw2.in > epw2.out
   wmax_specfun = 0.12 ! eV
   nw_specfun   = 200
   degaussw   = 0.05   ! eV
-  temps      = 300.0  3157.75  ! Kelvin (0.02 Ry = 3157.75 K)
+  temps      = 300.0  ! Kelvin (T_low only; T_high is set automatically)
   ! ------------------------------------------------------
 
   nbndsub     =  5
 
   efermi_read  = .true.
-  fermi_energy = 7.5014
+  fermi_energy = 7.4502
 
   nk1         = 6
   nk2         = 6
@@ -1264,10 +1417,22 @@ $ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 epw2.in > epw2.out
 
   nq1         = 3
   nq2         = 3
-  nq3         = 2
+  nq3         = 3
 /
 \end{Verbatim}
 \end{scriptsize}
+
+
+\paragraph{Automatic unscreening (EPW v6.0+).}
+Since EPW v6.0 (released August 2025), the phonon self-energy at the high temperature $T^{\rm high}$ used for the unscreening in \Eq{eq:phself_unscreening} is computed \emph{automatically}, with the same smearing method and parameter that were used in the \texttt{scf} calculation.
+%
+For example, here the \texttt{scf.in} uses Methfessel--Paxton smearing (\texttt{smearing = `mp'}) with \texttt{degauss}=0.05~Ry.
+%
+The same smearing is reused internally for $\Pi^{\rm 1L}_\qnu(0; T^{\rm high})$.
+%
+The user therefore only has to specify the low temperatures in the EPW \texttt{temps} input.
+
+\vspace{0.2cm}
 
 \begin{footnotesize}
    {\bf Notes}:
@@ -1275,10 +1440,10 @@ $ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 epw2.in > epw2.out
       \item We set \texttt{lopt\_w2b = .false.} because the $\mb{q}$-point is not from a homogeneous grid, so the optimization does not work. We can then use the memory-optimized version with \texttt{etf\_mem = 1}.
       \item \texttt{specfun\_ph} asks for the frequency-dependent phonon self-energy and spectral function to be computed.
       \item \texttt{filqf} is the file containing the $\mb{q}$-points for the phonon spectral function calculation.
-      \item \texttt{nkf1}, \texttt{nkf2}, and \texttt{nkf3} are the number of $\mb{k}$-points in the $\mb{k}$-point grid for the phonon spectral function calculation.
+      \item \texttt{nkf1}, \texttt{nkf2}, and \texttt{nkf3} are the size of the (homogeneous, $\Gamma$-centered) $\mb{k}$-point grid used for the BZ integration in the self-energy.
       \item The spectral function is computed for a uniform grid of frequencies between \texttt{wmin\_specfun = 0.00} (eV) and \texttt{wmax\_specfun = 0.12} (eV) with \texttt{nw\_specfun = 200} points.
       \item \texttt{degaussw = 0.05} (eV) is the smearing parameter $\eta$ in the self-energy formula Eq.~\eqref{eq:phself}.
-      \item We compute the self-energy at two temperatures \texttt{temps = 300.0, 3157.75} (K) to account for the unscreening procedure. 3157.75~K corresponds to 0.02~Ry smearing value used in the SCF calculation.
+      \item Compared to the previous version of EPW, \texttt{temps} now only contains the low temperature $T^{\rm low}$. You may provide multiple low temperatures here.
    \end{itemize}
 \end{footnotesize}
 
@@ -1286,19 +1451,34 @@ $ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 epw2.in > epw2.out
 \vspace{0.5cm}
 
 In addition to the standard output, the code will produce additional output files.
-One can obtain a complete information on the frequency-dependent self-energy from the file \texttt{specfun\_sup.phon} (again, we trimmed some digits):
+%
+The frequency-dependent self-energy can be read from the file \texttt{specfun\_sup.phon}.
+%
+Its header reads:
 {\color{cverb} \small
 \begin{verbatim}
 #Phonon eigenenergies + real and im part of phonon self-energy (meV)
-#Q-point    Mode      Temp.[K]       w_q[eV]        w[eV]    Real Sigma(w)[meV]
-   Real Sigma(w=0)[meV]     Im Sigma(w)[meV]
-      1        1   300.000      -0.00000       0.00000    0.00000E+00    0.00000E+00    0.00000E+00
-      1        2   300.000      -0.00000       0.00000    0.00000E+00    0.00000E+00    0.00000E+00
-      ...
+#Q-point    Mode      Temp.[K]       smearing[eV]       w_q[eV]    w[eV]
+   Real Pi(w, T_low)[meV]   Real Pi(w=0,T_high)[meV]     Im Pi(w, T_low)[meV]
 \end{verbatim}
 }
 
-The static self-energy $\Pi^{\rm 1L}_\qnu(0; T^{\rm high})$ in \Eq{eq:phself_unscreening} can be found in the 7th column, and the dynamical self-energy $\Pi^{\rm 1L}_\qnu(\omega; T^{\rm low})$ is in the 6th (real part) and 8th (imaginary part) columns, for the corresponding temperatures in the 3rd row.
+Each row corresponds to a $(\mb{q}, \nu, \omega)$ triplet:
+\begin{footnotesize}
+\begin{itemize}
+   \item Column~3 (\texttt{Temp.[K]}) is the low temperature $T^{\rm low}$ specified in \texttt{temps}.
+   \item Column~4 (\texttt{smearing[eV]}) is the smearing $\eta$ used in the self-energy (i.e., \texttt{degaussw} in eV).
+   \item Column~5 (\texttt{w\_q[eV]}) is the bare DFPT phonon eigenenergy $\omega_\qnu$.
+   \item Column~6 (\texttt{w[eV]}) is the frequency $\omega$ on the user-defined grid.
+   \item Column~7 contains the real part of the dynamical low-temperature self-energy
+         $\mathrm{Re}\,\Pi^{\rm 1L}_\qnu(\omega; T^{\rm low})$.
+   \item Column~8 contains the real part of the static high-temperature self-energy
+         $\mathrm{Re}\,\Pi^{\rm 1L}_\qnu(0; T^{\rm high})$, computed automatically with the SCF smearing.
+   \item Column~9 contains the imaginary part of the dynamical low-temperature self-energy
+         $\mathrm{Im}\,\Pi^{\rm 1L}_\qnu(\omega; T^{\rm low})$.
+\end{itemize}
+\end{footnotesize}
+The unscreened self-energy entering Eq.~\eqref{eq:phspec} is then $\Delta\Pi_\qnu(\omega; T^{\rm low}) = (\mathrm{col.~7} - \mathrm{col.~8}) + i\, \mathrm{col.~9}$.
 
 
 \vspace{0.2cm}
@@ -1317,7 +1497,7 @@ The result looks as follows:
 
 \begin{center}
    \vspace{0.2cm}
-   \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_phonon.pdf}
+   \includegraphics[width=0.9\textwidth]{assets/mgb2_phonon.pdf}
    \vspace{0.1cm}
 \end{center}
 
@@ -1331,7 +1511,7 @@ Here, the frequency and $\mb{k}$-point mesh is too coarse, so the integral is no
 Using a denser $60\times60\times60$ $\mb{k}$-point grid and 500 frequency points, we have:
 \begin{center}
    \vspace{0.2cm}
-   \includegraphics[width=0.9\textwidth]{assets/figures/mgb2_phonon_dense.pdf}
+   \includegraphics[width=0.9\textwidth]{assets/mgb2_phonon_dense.pdf}
    \vspace{0.1cm}
 \end{center}
 
@@ -1523,21 +1703,22 @@ plt.rcParams.update({'font.size': 15})
 filename = "specfun_sup.phon"
 
 # --------------------------------------
-# Parse specfun_sup file
+# Parse specfun_sup file (EPW v6.0+ layout, 9 columns)
+# Columns: Q  Mode  Temp[K]  smearing[eV]  w_q[eV]  w[eV]
+#          Re Pi(w,T_low)[meV]  Re Pi(0,T_high)[meV]  Im Pi(w,T_low)[meV]
 data = np.loadtxt(filename)
 nq = int(data[-1, 0])
 nmodes = int(data[-1, 1])
 
-# [iq, iT, iw, imode, idata]
-data = data.reshape(nq, 2, -1, nmodes, 8)
-ws = data[0, 0, :, 0, 4] * 1e3  # eV to meV
+# [iq, iw, imode, idata]
+data = data.reshape(nq, -1, nmodes, 9)
+ws = data[0, :, 0, 5] * 1e3  # eV to meV
 nw = len(ws)
 
-T_low = data[0, 0, 0, 0, 2]
-T_high = data[0, 1, 0, 0, 2]
-w_ph = data[:, 0, 0, :, 3] * 1e3  # eV to meV
-Pi_low = data[:, 0, :, :, 5] + 1j * data[:, 0, :, :, 7]
-Pi_high_0 = data[:, 1, :, :, 6]
+T_low = data[0, 0, 0, 2]
+w_ph = data[:, 0, :, 4] * 1e3  # eV to meV
+Pi_low = data[:, :, :, 6] + 1j * data[:, :, :, 8]
+Pi_high_0 = data[:, :, :, 7]
 Pi = Pi_low - Pi_high_0
 
 xks = np.loadtxt("qpt.txt", skiprows=1)[:, :3].T
@@ -1585,7 +1766,7 @@ cbar.set_label("$A_{\mathbf{q}}(\omega)$ (1/meV)")
 
 # Plot bands
 for i in range(nmodes):
-   plt.plot(xs, w_ph[:, i], "r--", lw=1, label=f"DFPT T={T_high:.0f}K" if i == 0 else None)
+   plt.plot(xs, w_ph[:, i], "r--", lw=1, label="DFPT (bare)" if i == 0 else None)
    plt.plot(xs, w_ph_low[:, i], "-.", c="C1", lw=1, label=f"EPW T={T_low:.0f}K" if i == 0 else None)
 plt.legend(framealpha=1.0, loc="upper center", ncol=2)
 
