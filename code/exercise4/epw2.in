@@ -3,7 +3,7 @@
   prefix      = 'mgb2'
   outdir      = './'
   dvscf_dir   = './save'
-  etf_mem     =  1
+  etf_mem     = 0
   lopt_w2b    = .false.
 
   elph        = .true.
@@ -21,8 +21,8 @@
   wmin_specfun = 0.00 ! eV
   wmax_specfun = 0.12 ! eV
   nw_specfun   = 200
-  degaussw   = 0.05   ! eV
-  temps      = 300.0  3157.75  ! Kelvin (0.02 Ry = 3157.75 K)
+  degaussw     = 0.05   ! eV
+  temps        = 300.0  ! K
   ! ------------------------------------------------------
 
   nbndsub     =  5
@@ -36,5 +36,5 @@
 
   nq1         = 3
   nq2         = 3
-  nq3         = 2
+  nq3         = 3
 /

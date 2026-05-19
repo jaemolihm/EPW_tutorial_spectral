@@ -14,17 +14,17 @@ filename = "specfun_sup.phon"
 data = np.loadtxt(filename)
 nq = int(data[-1, 0])
 nmodes = int(data[-1, 1])
+nT = np.unique(data[:, 2]).size  # number of temperatures
 
 # [iq, iT, iw, imode, idata]
-data = data.reshape(nq, 2, -1, nmodes, 8)
-ws = data[0, 0, :, 0, 4] * 1e3  # eV to meV
+data = data.reshape(nq, nT, -1, nmodes, 9)
+ws = data[0, 0, :, 0, 5] * 1e3  # eV to meV
 nw = len(ws)
 
 T_low = data[0, 0, 0, 0, 2]
-T_high = data[0, 1, 0, 0, 2]
-w_ph = data[:, 0, 0, :, 3] * 1e3  # eV to meV
-Pi_low = data[:, 0, :, :, 5] + 1j * data[:, 0, :, :, 7]
-Pi_high_0 = data[:, 1, :, :, 6]
+w_ph = data[:, 0, 0, :, 4] * 1e3  # eV to meV
+Pi_low = data[:, 0, :, :, 6] + 1j * data[:, 0, :, :, 8]
+Pi_high_0 = data[:, 0, :, :, 7]
 Pi = Pi_low - Pi_high_0
 
 
@@ -64,8 +64,8 @@ axes[1, 1].set_axis_off()
 # Plot spectral function
 plt.sca(axes[0, 0])
 im = NonUniformImage(axes[0, 0], interpolation='nearest',
-    extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()], cmap="viridis",
-    norm=plt.matplotlib.colors.LogNorm(vmin=0.01, vmax=10))
+    extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()], cmap="Reds",
+    norm=plt.matplotlib.colors.LogNorm(vmin=0.005, vmax=5))
 im.set_data(xs, ws_plot, A.T)
 axes[0, 0].add_image(im)
 cbar = plt.colorbar(im, cax=axes[0, 1])
@@ -73,8 +73,8 @@ cbar.set_label("$A_{\mathbf{q}}(\omega)$ (1/meV)")
 
 # Plot bands
 for i in range(nmodes):
-    plt.plot(xs, w_ph[:, i], "r--", lw=1, label=f"DFPT T={T_high:.0f}K" if i == 0 else None)
-    plt.plot(xs, w_ph_low[:, i], "-.", c="C1", lw=1, label=f"EPW T={T_low:.0f}K" if i == 0 else None)
+    plt.plot(xs, w_ph[:, i], "--", c="gray", lw=1, label=f"DFPT smearing 0.05 Ry" if i == 0 else None)
+    plt.plot(xs, w_ph_low[:, i], "-", c="b", lw=1, label=f"EPW T={T_low:.0f}K" if i == 0 else None)
 plt.legend(framealpha=1.0, loc="upper center", ncol=2)
 
 plt.axhline(0, c="grey", lw=1)
@@ -102,4 +102,5 @@ plt.xlim([xs[0], xs[-1]])
 
 plt.tight_layout()
 fig.savefig("mgb2_phonon.pdf")
+print("Saved figure to mgb2_phonon.pdf")
 #plt.show()

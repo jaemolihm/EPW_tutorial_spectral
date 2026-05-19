@@ -3,7 +3,7 @@
   prefix      = 'mgb2'
   outdir      = './'
   dvscf_dir   = './save'
-  etf_mem     =  1
+  etf_mem     =  0
 
   elph        = .true.
   use_ws      = .true.
@@ -27,7 +27,7 @@
 
   nq1         = 3
   nq2         = 3
-  nq3         = 2
+  nq3         = 3
 
   nkf1        = 1
   nkf2        = 1
