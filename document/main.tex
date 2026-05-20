@@ -1294,34 +1294,46 @@ We now see that the bare band aligns well with the spectral function at the Ferm
 The velocity renormalization and kink are caused by the characteristic frequency dependence of the electron self-energy.
 %
 \texttt{graphene\_selfenergy\_doped.pdf} shows the self-energy for the $\mb{k}$ point at the Fermi level.
-%
-The real and imaginary parts of the calculated self-energy can be compared with those extracted from experiment using the xARPES code\footnote{\url{https://xarpes.readthedocs.io/en/latest/notebooks/graphene.html}}, which are shown in the right panel of the figure below (right).
+
 \begin{center}
    \vspace{0.2cm}
-   \begin{minipage}[c]{0.64\textwidth}\centering
-      \includegraphics[width=\textwidth]{assets/graphene_selfenergy_doped.pdf}\\
-      {\footnotesize EPW (this tutorial)}
-   \end{minipage}\hfill
-   \begin{minipage}[c]{0.35\textwidth}\centering
-      \includegraphics[width=\textwidth]{assets/graphene_xarpes_selfen.png}\\
-      {\footnotesize xARPES reference}
-   \end{minipage}
+   \includegraphics[width=0.85\textwidth]{assets/graphene_selfenergy_doped.pdf}
    \vspace{0.1cm}
 \end{center}
 
-We find a good qualitative agreement, with a peak in the real part of the self-energy at $\hbar\omega_{\rm ph} \approx 200$~meV, and a dip in the imaginary part of the self-energy at the same energy.
+We find a peak in the real part of the self-energy at $\hbar\omega_{\rm ph} \approx 200$~meV, and a corresponding step in the imaginary part of the self-energy at the same energy.
 
 \vspace{0.2cm}
-
-\action For the real part, the experimental data is positioned around zero, while our calculated self-energy is shifted down by about 40~meV. What is the origin of this shift?
-
-\action For the imaginary part, the calculation decays to nearly zero at the Fermi level, while the experimental data has a finite value. What could be the origin of this finite broadening in the experiment?
 
 \action Try estimating the electron-phonon coupling strength $\lambda$ from the velocity renormalization at the Fermi level, and compare with the experimental value extracted from the ARPES spectrum.
 
 \action Try shifting \texttt{fermi\_energy} by different amounts (e.g.\ $\pm 200$~meV from the Dirac point) and observe how the kink position tracks the Fermi level.
 
 \action Try calculations at different temperatures.
+
+\vspace{0.2cm}
+
+The real and imaginary parts of the calculated self-energy can be compared with those extracted from experiment using the xARPES code\footnote{\url{https://xarpes.readthedocs.io/en/latest/notebooks/graphene.html}}, shown side by side below.
+The calculated curves have been shifted vertically (Re\,$\Sigma$ by $+40$~meV, $-$Im\,$\Sigma$ by $+110$~meV) so that they overlay the experimental traces on the same axes.
+
+\begin{center}
+   \vspace{0.2cm}
+   \begin{minipage}[c]{0.49\textwidth}\centering
+      \includegraphics[width=\textwidth]{assets/graphene_selfenergy_doped_xarpes.pdf}\\
+      {\footnotesize EPW (this tutorial), shifted}
+   \end{minipage}\hfill
+   \begin{minipage}[c]{0.49\textwidth}\centering
+      \includegraphics[width=\textwidth]{assets/graphene_xarpes_selfen.png}\\
+      {\footnotesize xARPES reference}
+   \end{minipage}
+   \vspace{0.1cm}
+\end{center}
+
+The shape of both curves agrees well with experiment over the full energy range.
+
+\action For the real part, the experimental data is positioned around zero, while our calculated self-energy is shifted by about 40~meV. What is the origin of this shift?
+
+\action For the imaginary part, the calculation (before adding the artificial shift) decays to nearly zero at the Fermi level, while the experimental data has a finite value of about 110~meV. What could be the origin of this finite broadening in the experiment?
 
 
 \newpage
