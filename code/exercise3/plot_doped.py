@@ -194,8 +194,8 @@ for ax in axes2:
     ax.axhline(0, c="grey", lw=0.5)
     ax.axvline(0, c="grey", lw=0.5)
     ax.set_xlim([PLOT_EMIN, PLOT_EMAX])
-axes2[0].set_ylabel(r"Re $\Sigma(\omega)$ (meV)")
-axes2[1].set_ylabel(r"Im $\Sigma(\omega)$ (meV)")
+axes2[0].set_ylabel(r"Re $\Sigma(E)$ (meV)")
+axes2[1].set_ylabel(r"$-$Im $\Sigma(E)$ (meV)")
 axes2[0].legend(fontsize=9, loc="best")
 
 fig2.tight_layout()
@@ -216,10 +216,10 @@ IM_SHIFT = 0.110   # eV, vertical shift for -Im Sigma (red)
 
 fig4, ax4 = plt.subplots(figsize=(6, 4))
 ax4.plot(ws, sigma[ib_star, ik_star, :].real + RE_SHIFT, "b-", lw=1.5,
-         label=(r"$\mathrm{Re}\,\Sigma(\omega) + "
+         label=(r"$\mathrm{Re}\,\Sigma(E) + "
                 f"{RE_SHIFT*1000:.0f}" + r"\,\mathrm{meV}$"))
-ax4.plot(ws, -sigma[ib_star, ik_star, :].imag + IM_SHIFT, "r-", lw=1.5,
-         label=(r"$-\mathrm{Im}\,\Sigma(\omega) + "
+ax4.plot(ws, sigma[ib_star, ik_star, :].imag + IM_SHIFT, "r-", lw=1.5,
+         label=(r"$-\mathrm{Im}\,\Sigma(E) + "
                 f"{IM_SHIFT*1000:.0f}" + r"\,\mathrm{meV}$"))
 ax4.set_xlabel(r"$E - \mu$ (eV)")
 ax4.set_ylabel(r"$\Sigma'(E),\ -\Sigma''(E)$ (eV)")
