@@ -214,7 +214,7 @@ XARPES_YMIN, XARPES_YMAX = -0.02, 0.27
 RE_SHIFT = 0.040   # eV, vertical shift for Re Sigma (blue)
 IM_SHIFT = 0.110   # eV, vertical shift for -Im Sigma (red)
 
-fig4, ax4 = plt.subplots(figsize=(6, 4))
+fig4, ax4 = plt.subplots(figsize=(6, 4.5))
 ax4.plot(ws, sigma[ib_star, ik_star, :].real + RE_SHIFT, "b-", lw=1.5,
          label=(r"$\mathrm{Re}\,\Sigma(E) + "
                 f"{RE_SHIFT*1000:.0f}" + r"\,\mathrm{meV}$"))
