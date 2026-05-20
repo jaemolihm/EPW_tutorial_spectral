@@ -201,4 +201,33 @@ axes2[0].legend(fontsize=9, loc="best")
 fig2.tight_layout()
 fig2.savefig("graphene_selfenergy_doped.pdf", bbox_inches="tight")
 print("Saved figure to graphene_selfenergy_doped.pdf")
+
+# -------------------------------------
+# Direct comparison with xARPES self-energy (Hofmann et al.).
+# Same x/y scale as graphene_xarpes_selfen.png:
+#   x: E - mu in [-0.25, 0.02] eV
+#   y: Sigma', -Sigma'' in [-0.02, 0.27] eV
+# Re Sigma is shifted by +40 meV and -Im Sigma by +110 meV so that the
+# computed curves overlay the experimental traces.
+XARPES_XMIN, XARPES_XMAX = -0.25, 0.02
+XARPES_YMIN, XARPES_YMAX = -0.02, 0.27
+RE_SHIFT = 0.040   # eV, vertical shift for Re Sigma (blue)
+IM_SHIFT = 0.110   # eV, vertical shift for -Im Sigma (red)
+
+fig4, ax4 = plt.subplots(figsize=(6, 4))
+ax4.plot(ws, sigma[ib_star, ik_star, :].real + RE_SHIFT, "b-", lw=1.5,
+         label=(r"$\mathrm{Re}\,\Sigma(\omega) + "
+                f"{RE_SHIFT*1000:.0f}" + r"\,\mathrm{meV}$"))
+ax4.plot(ws, -sigma[ib_star, ik_star, :].imag + IM_SHIFT, "r-", lw=1.5,
+         label=(r"$-\mathrm{Im}\,\Sigma(\omega) + "
+                f"{IM_SHIFT*1000:.0f}" + r"\,\mathrm{meV}$"))
+ax4.set_xlabel(r"$E - \mu$ (eV)")
+ax4.set_ylabel(r"$\Sigma'(E),\ -\Sigma''(E)$ (eV)")
+ax4.set_xlim([XARPES_XMIN, XARPES_XMAX])
+ax4.set_ylim([XARPES_YMIN, XARPES_YMAX])
+ax4.legend(fontsize=11, loc="upper right")
+
+fig4.tight_layout()
+fig4.savefig("graphene_selfenergy_doped_xarpes.pdf", bbox_inches="tight")
+print("Saved figure to graphene_selfenergy_doped_xarpes.pdf")
 #plt.show()
