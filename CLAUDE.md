@@ -46,16 +46,27 @@ un-ignoring the build output.
 
 ## Packaging for distribution
 
-`make` at the repo root produces the two artifacts students receive:
+`make` at the repo root produces the two artifacts students receive
+and uploads them to the shared Google Drive folder:
 
 - `Thu.5.Lihm.pdf` — copy of `document/main.pdf`.
 - `Thu.5.Lihm.tar` — tarball of `code/` renamed so it extracts to
   `Thu.5.Lihm/exercise1`, `…/exercise2`, etc. (uses a temporary symlink
   + `tar -ch` so it works with BSD `tar` on macOS).
 
-Targets: `make pdf`, `make tar`, `make clean`. Both artifacts are
-gitignored. `make pdf` rebuilds the handout via `pdflatex` if
-`main.tex`/`settings.tex` are newer than `document/main.pdf`.
+Targets: `make pdf`, `make tar`, `make push`, `make frontera`,
+`make clean`. Both artifacts are gitignored. `make pdf` rebuilds the
+handout via `pdflatex` if `main.tex`/`settings.tex` are newer than
+`document/main.pdf`. `make push` uploads both artifacts to the
+`gdrive_EPW2026:` rclone remote, targeting the shared folder by ID
+(set in the Makefile); overwrites existing files. `make frontera` scps
+the tar to `jmlihm@frontera.tacc.utexas.edu:~/` — not part of the
+default `make` because Frontera requires 2FA; run manually.
+
+When the user says "build" (without further qualification), run `make`
+to build and push everything (PDF + tar + Google Drive upload). Do not
+build or push just one artifact unless asked specifically. Do not run
+`make frontera` automatically.
 
 ## Debugging workspace
 
