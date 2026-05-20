@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
+import sys
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.image import NonUniformImage
 
 plt.rcParams.update({'font.size': 15})
 
-# filename = "data.nk60.nw500/specfun_sup.phon"
-# filename = "data.nk10.nw200/specfun_sup.phon"
-filename = "specfun_sup.phon"
+# Optional command-line argument: directory containing specfun_sup.phon.
+# Output PDF is named mgb2_phonon[_<dirname>].pdf.
+if len(sys.argv) > 1:
+    data_dir = sys.argv[1].rstrip("/")
+    filename = os.path.join(data_dir, "specfun_sup.phon")
+    suffix = os.path.basename(data_dir).removeprefix("data.")
+    out_pdf = f"mgb2_phonon_{suffix}.pdf"
+else:
+    filename = "specfun_sup.phon"
+    out_pdf = "mgb2_phonon.pdf"
 
 # --------------------------------------
 # Parse specfun_sup file
@@ -38,7 +47,7 @@ eta = 0.1 # meV
 
 # --------------------------------------
 # Compute self-energy
-A = np.zeros((nq, len(ws_plot)))
+B = np.zeros((nq, len(ws_plot)))
 w_ph_low = np.zeros_like(w_ph)
 
 for iq in range(nq):
@@ -53,9 +62,9 @@ for iq in range(nq):
         for iw in range(len(ws_plot)):
             w = ws_plot[iw]
             Pi_w = Pi_itp[iw]
-            A[iq, iw] += -np.imag(2 * w / ((w + 1j * eta)**2 - wq**2 - 2 * wq * Pi_w)) / np.pi
+            B[iq, iw] += -np.imag(2 * w / ((w + 1j * eta)**2 - wq**2 - 2 * wq * Pi_w)) / np.pi
 
-A[A < 0] = 1e-10
+B[B < 0] = 1e-10
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 6), sharex="col", gridspec_kw={'height_ratios': [3, 1], "width_ratios":[1,0.02]})
 axes[1, 1].set_axis_off()
@@ -66,10 +75,10 @@ plt.sca(axes[0, 0])
 im = NonUniformImage(axes[0, 0], interpolation='nearest',
     extent=[xs[0], xs[-1], ws_plot.min(), ws_plot.max()], cmap="Reds",
     norm=plt.matplotlib.colors.LogNorm(vmin=0.005, vmax=5))
-im.set_data(xs, ws_plot, A.T)
+im.set_data(xs, ws_plot, B.T)
 axes[0, 0].add_image(im)
 cbar = plt.colorbar(im, cax=axes[0, 1])
-cbar.set_label("$A_{\mathbf{q}}(\omega)$ (1/meV)")
+cbar.set_label("$B_{\mathbf{q}}(\omega)$ (1/meV)")
 
 # Plot bands
 for i in range(nmodes):
@@ -85,8 +94,8 @@ plt.ylim([ws_plot.min(), ws_plot.max()])
 # Plot integrated spectral function
 plt.sca(axes[1, 0])
 dw = ws_plot[1] - ws_plot[0]
-plt.plot(xs, np.sum(A, axis=1) * dw, "-", label=r"$A(\omega)$", lw=2)
-plt.ylabel(r"$\int A_{\mathbf{q}}(\omega) d\omega$")
+plt.plot(xs, np.sum(B, axis=1) * dw, "-", label=r"$B(\omega)$", lw=2)
+plt.ylabel(r"$\int B_{\mathbf{q}}(\omega) d\omega$")
 
 plt.ylim([0, 12])
 plt.yticks([0, 9])
@@ -101,6 +110,6 @@ plt.xlim([xs[0], xs[-1]])
 
 
 plt.tight_layout()
-fig.savefig("mgb2_phonon.pdf")
-print("Saved figure to mgb2_phonon.pdf")
+fig.savefig(out_pdf)
+print(f"Saved figure to {out_pdf}")
 #plt.show()

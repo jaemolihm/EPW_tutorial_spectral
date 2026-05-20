@@ -89,6 +89,14 @@ Typical exercise flow: `pw.x` (scf) → `ph.x` → `pw.x` (nscf) → `pp.x` →
 `epw.x` (and/or `ahc.x`). See each exercise's input files for the exact
 order; the handout (`main.tex`) is the authoritative walkthrough.
 
+When running `plot.py` scripts in a headless session (e.g., from an agent
+shell with no display), prefix the command with `MPLBACKEND=Agg` so
+matplotlib does not try to load `TkAgg` and fail with an `ImportError`:
+
+```bash
+MPLBACKEND=Agg python plot.py
+```
+
 ## Editing conventions
 
 - Keep `settings.tex` as the single source of shared LaTeX macros — don't
