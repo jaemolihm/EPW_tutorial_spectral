@@ -1005,7 +1005,14 @@ For each band and $\mb{k}$ point, the diagonal part of the frequency-dependent s
 \vspace{0.2cm}
 
 The computed spectral function can be visualized using the \program{plot.py} script.
-Since the spectral function has sharp peaks at the quasiparticle energy, we linearly interpolate the self-energy to a denser frequency grid before computing the spectral function.
+Since the spectral function $A_{n\mb{k}}(\omega)$ has sharp peaks at the quasiparticle energy, the \texttt{nw\_specfun = 200} grid written out by EPW is too coarse to resolve them cleanly.
+The self-energy $\Sigma_{n\mb{k}}(\omega)$, however, is a smooth function of $\omega$.
+The \program{plot.py} script therefore reads $\Sigma_{n\mb{k}}(\omega)$ from \texttt{specfun\_sup.elself.300.000K}, linearly interpolates it onto a much denser frequency grid (10\,000 points), and evaluates the spectral function on that dense grid via
+\begin{equation}
+   A_{n\mb{k}}(\omega) = -\frac{1}{\pi} \mathrm{Im}\, \frac{1}{\omega - \varepsilon_{n\mb{k}} - \Sigma_{n\mb{k}}(\omega)},
+   \qquad A_{\mb{k}}(\omega) = \sum_n A_{n\mb{k}}(\omega).
+\end{equation}
+This recovers the sharp quasiparticle peaks without re-running EPW on a finer \texttt{nw\_specfun} grid.
 To use matplotlib, we should first load the module and install the matplotlib package.
 
 \begin{verbatim}
@@ -1346,7 +1353,7 @@ More information about the phonon self-energy and the unscreening procedure can 
 
 The phonon spectral function reads\footnote{P.\ B.\ Allen and R.\ Silberglitt, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.9.4733}{Phys.\ Rev.\ B \textbf{9}, 4733 (1974)}. See also Eqs.~(2,3) of J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}. We have an additional $2\omega_\qnu$ factor multiplied to the self-energy because of the difference in the definition of the electron-phonon matrix element $g_{mn\nu}(\mb{k}, \mb{q})$. Compare Eq.~(2) of F.\ Giustino, \href{https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.89.015003}{Rev. Mod. Phys. \textbf{89}, 015003 (2017)} and Eq.~(12) of J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}.}
 \begin{equation} \label{eq:phspec}
-   A_{\mb{q}}(\omega; T) = -\frac{2\omega}{\pi} \sum_{\nu} \mathrm{Im} \frac{1}{(\omega + i\eta)^2 - \omega_\qnu^2 - 2\omega_\qnu \, \Delta \Pi_\qnu(\omega; T)}
+   B_{\mb{q}}(\omega; T) = -\frac{2\omega}{\pi} \sum_{\nu} \mathrm{Im} \frac{1}{(\omega + i\eta)^2 - \omega_\qnu^2 - 2\omega_\qnu \, \Delta \Pi_\qnu(\omega; T)}
 \end{equation}
 
 \vspace{0.2cm}
