@@ -59,7 +59,7 @@ Targets: `make pdf`, `make tar`, `make push`, `make frontera`,
 handout via `pdflatex` if `main.tex`/`settings.tex` are newer than
 `document/main.pdf`. `make push` uploads both artifacts to the
 `gdrive_EPW2026:` rclone remote, targeting the shared folder by ID
-(set in the Makefile); overwrites existing files. `make frontera` scps
+(set in `Makefile.local`, gitignored); overwrites existing files. `make frontera` scps
 the tar to `jmlihm@frontera.tacc.utexas.edu:~/` — not part of the
 default `make` because Frontera requires 2FA; run manually.
 
