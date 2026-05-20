@@ -33,8 +33,11 @@ push: $(PDF) $(TAR)
 	rclone copy --drive-root-folder-id $(GDRIVE_FOLDER_ID) $(PDF) $(GDRIVE_REMOTE) -v
 	rclone copy --drive-root-folder-id $(GDRIVE_FOLDER_ID) $(TAR) $(GDRIVE_REMOTE) -v
 
-frontera: $(TAR)
-	scp $(TAR) $(FRONTERA_HOST):$(FRONTERA_DEST)
+frontera:
+	rm -f $(TAR)
+	$(MAKE) $(TAR)
+	chmod 755 $(TAR)
+	scp -p $(TAR) $(FRONTERA_HOST):$(FRONTERA_DEST)
 
 clean:
 	rm -f $(PDF) $(TAR)
