@@ -55,7 +55,7 @@ You are advised to prepare the following script file, e.g. \texttt{run.sh}:
 #SBATCH --reservation=NSF_Summer_School_Sat
 
 # Launch MPI code...
-export PATHQE=/work2/05193/sabyadk/stampede3/EPWSchool2024/q-e
+export PATHQE=/work2/11514/acarrasc/frontera/q-e
 
 ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
 ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ph.in > ph.out
@@ -167,9 +167,9 @@ First download the exercise files:
 \begin{scriptsize}
 \begin{verbatim}
 $ cd $SCRATCH
-$ cp /work2/05193/sabyadk/stampede3/EPWSchool2024/tutorials/Sat.5.Lihm.tar .
-$ tar -xvf Sat.5.Lihm.tar
-$ cd Sat.5.Lihm/exercise1/
+$ cp /home1/08221/jmlihm/Thu.5.Lihm.tar .
+$ tar -xvf Thu.5.Lihm.tar
+$ cd Thu.5.Lihm/exercise1/
 \end{verbatim}
 \end{scriptsize}
 
@@ -1016,7 +1016,7 @@ This recovers the sharp quasiparticle peaks without re-running EPW on a finer \t
 To use matplotlib, we should first load the module and install the matplotlib package.
 
 \begin{verbatim}
-$ module load python/3.9.18
+$ module load python/3.9.2
 $ python3 -m pip install matplotlib --user
 $ python3 plot.py
 \end{verbatim}

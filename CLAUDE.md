@@ -93,7 +93,7 @@ done
 
 `code/run.sh` targets Stampede3 (SLURM, `ibrun`, `-A DMR23030`, `skx`
 partition) and points at a fixed QE build path
-(`/work2/.../EPWSchool2024/q-e`). Update the partition, account, and
+(`/work2/11514/acarrasc/frontera/q-e`). Update the partition, account, and
 `PATHQE` for the target cluster before submitting.
 
 Typical exercise flow: `pw.x` (scf) → `ph.x` → `pw.x` (nscf) → `pp.x` →

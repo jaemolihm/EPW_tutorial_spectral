@@ -9,7 +9,7 @@
 #SBATCH -p skx
 
 # Launch MPI code...
-export PATHQE=/work2/05193/sabyadk/stampede3/EPWSchool2024/q-e
+export PATHQE=/work2/11514/acarrasc/frontera/q-e
 
 ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
 ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ph.in > ph.out
