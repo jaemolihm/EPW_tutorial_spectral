@@ -966,11 +966,11 @@ The file \texttt{specfun.elself.300.000K} contains the spectral function data:
 
    #K-point     Energy[eV]     A(k,w)[meV^-1]
 
-        1   -13.00000   0.60715E-06
+        1   -13.00000   0.60716E-06
         1   -12.92714   0.83532E-06
         1   -12.85427   0.12018E-05
          ...
-   # Integrated spectral function    0.12028E+00
+   # Integrated spectral function    0.10198E+01
          ...
 \end{verbatim}
 }
@@ -1182,6 +1182,9 @@ The intrinsic-graphene result reproduces the linear Dirac dispersion with phonon
 Note that the broadening is the weakest near the Dirac point, where the density of states vanishes, and increases away from the Dirac point as the density of states increases.
 %
 The calculated result is reliable only inside the AHC active window, which is indicated by the horizontal dashed lines.
+%
+The kink or the sudden change in the spectral function in the lower band along the M--K path is an artifact of this window truncation, not a physical effect.
+
 \begin{center}
    \vspace{0.2cm}
    \includegraphics[width=0.6\textwidth]{assets/graphene_spectral.pdf}

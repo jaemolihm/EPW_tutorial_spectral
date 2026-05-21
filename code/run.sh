@@ -5,8 +5,8 @@
 #SBATCH -N 1
 #SBATCH --ntasks-per-node 8
 #SBATCH -t 00:15:00
-#SBATCH -A DMR23030
-#SBATCH -p skx
+#SBATCH -A DMR23048
+#SBATCH -p small
 
 # Launch MPI code...
 export PATHQE=/work2/11514/acarrasc/frontera/q-e
