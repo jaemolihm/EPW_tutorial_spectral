@@ -1261,7 +1261,7 @@ $ python3 plot.py
       \item \texttt{ahc\_win\_min/max} are unchanged: the AHC window is fixed by the band structure and does not move with the Fermi level.
       \item \texttt{fermi\_energy} only relocates the spectral function frequency window $[\texttt{wmin\_specfun},\,\texttt{wmax\_specfun}]$ (now $[-1.0,\,1.0]$~eV around the shifted $E_{\rm F}$).
       \item We refine the BZ integration (\texttt{nqf1=nqf2=240}, \texttt{degaussw=0.005}~eV) to resolve the strongly-enhanced self-energy near the van Hove singularity.
-      \item \texttt{filkf = `./kpt\_near\_K.txt'} samples a short $\mb{k}$-path near $K$ to focus on the kink region. You may generate different $\mb{k}$ paths by running \texttt{python generate\_k.py k0 k1 N} (see the header of the file for details).
+      \item \texttt{filkf = `./kpt\_near\_K.txt'} samples a short $\mb{k}$-path near $K$ to focus on the kink region. You may generate different $\mb{k}$ paths by running \texttt{python3 generate\_k.py k0 k1 N} (see the header of the file for details).
    \end{itemize}
 \end{footnotesize}
 
