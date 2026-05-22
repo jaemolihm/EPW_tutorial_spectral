@@ -28,7 +28,7 @@ tar: $(TAR)
 
 $(TAR):
 	ln -sfn $(SRC_DIR) $(NAME)
-	tar --exclude='.DS_Store' -chf $(TAR) $(NAME)
+	COPYFILE_DISABLE=1 tar --no-xattrs --exclude='.DS_Store' -chf $(TAR) $(NAME)
 	rm -f $(NAME)
 
 push: $(PDF) $(TAR)
