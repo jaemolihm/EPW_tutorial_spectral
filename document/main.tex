@@ -12,7 +12,7 @@
 \newcommand{\Eq}[1]{{Eq.~\eqref{#1}}}
 \newcommand{\mb}[1]{\mathbf{#1}}
 \newcommand{\todo}[1]{{ \color{red}{[\small \textbf{{TODO}:} \textit{#1}]} }}
-\newcommand{\qnu}[0]{{\mb{q}\nu}}
+\newcommand{\nuq}[0]{{\nu\mb{q}}}
 
 
 
@@ -36,7 +36,7 @@ colframe=black,toprule=1.2pt,bottomrule=1.2pt,leftrule=1.2pt,rightrule=1.2pt,arc
 
 \section*{Introduction}
 
-In this tutorial, we show how to compute the phonon-induced renormalization of electron band structure of diamond within the Allen--Heine--Cardona theory\footnote{P.\ B.\ Allen and V.\ Heine, \href{https://iopscience.iop.org/article/10.1088/0022-3719/9/12/013}{J.\ Phys.\ C, \textbf{9}, 2305 (1976)}, P.\ B.\ Allen and M.\ Cardona, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.23.1495}{Phys.\ Rev.\ B, \textbf{23}, 1495 (1981)}}
+In this tutorial, we show how to compute the phonon-induced renormalization of electron band structure of diamond within the Allen--Heine--Cardona (AHC) theory\footnote{P.\ B.\ Allen and V.\ Heine, \href{https://iopscience.iop.org/article/10.1088/0022-3719/9/12/013}{J.\ Phys.\ C, \textbf{9}, 2305 (1976)}, P.\ B.\ Allen and M.\ Cardona, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.23.1495}{Phys.\ Rev.\ B, \textbf{23}, 1495 (1981)}}
 using Wannier Function perturbation theory (WFPT)\footnote{J.-M.\ Lihm and C.-H.\ Park, \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.11.041053}{Phys.\ Rev.\ X \textbf{11}, 041053 (2021)}},
 the electron spectral function of MgB$_2$ and of graphene (with a comparison to the experimental self-energy extracted via \href{https://xarpes.readthedocs.io/en/latest}{xARPES}), and the phonon spectral function of MgB$_2$.
 
@@ -50,24 +50,32 @@ You are advised to prepare the following script file, e.g. \texttt{run.sh}:
 #SBATCH -N 1 # Total # of nodes
 #SBATCH --ntasks-per-node 8
 #SBATCH -t 00:15:00 # Run time (hh:mm:ss)
-#SBATCH -A DMR23030
-#SBATCH -p skx
-#SBATCH --reservation=NSF_Summer_School_Sat
+#SBATCH -A DMR23048
+#SBATCH -p small
+#SBATCH --reservation=MATCSSI_Norm_June18
 
 # Launch MPI code...
-export PATHQE=/work2/11514/acarrasc/frontera/q-e
+export PATHQE=/work2/05193/sabyadk/shared/EPW_6.1s/q-e
 
 ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in scf.in > scf.out
 ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ph.in > ph.out
 \end{Verbatim}
 \end{scriptsize}
 
+\section*{List of exercises}
+\begin{itemize}
+   \item Exercise 1: Zero-point renormalization and temperature-dependent band gap of diamond
+   \item Exercise 2: Electronic spectral function of MgB$_2$
+   \item Exercise 3: Electronic spectral function of graphene
+   \item Exercise 4: Phononic spectral function of MgB$_2$
+\end{itemize}
+
 
 \section*{Exercise 1: Zero-point renormalization and temperature-dependent band gap of diamond}
 
 \subsection*{1.1 Theory}
 In this example we calculate the phonon-induced band gap renormalization of diamond.
-In the Allen--Heine--Cardona (AHC) formalism$^{1}$, the phonon-induced renormalization of electron eigenvalue is determined by the real part of the electron self-energy, which is the sum of the Fan and the Debye--Waller (DW) terms:
+In the AHC formalism$^{1}$, the phonon-induced renormalization of electron eigenvalue is determined by the real part of the electron self-energy, which is the sum of the Fan and the Debye--Waller (DW) terms:
 \begin{equation}
    \Sigma_{n\mb{k}} = \Sigma^{\rm Fan}_{n\mb{k}} + \Sigma^{\rm DW}_{n\mb{k}}.
 \end{equation}
@@ -76,32 +84,36 @@ In the Allen--Heine--Cardona (AHC) formalism$^{1}$, the phonon-induced renormali
 \vspace{0.5cm}
 The non-adiabatic Fan term comes from the second-order perturbative correction due to the linear electron-phonon coupling parameter and is given by\footnote{S.\ Ponc\'e \textit{et al}., \href{https://pubs.aip.org/aip/jcp/article-abstract/143/10/102813/898920/Temperature-dependence-of-the-electronic-structure?redirectedFrom=fulltext}{J.\ Chem.\ Phys.\ \textbf{143}, 102813 (2015)}}:
 \begin{equation}
-   \Sigma^{\rm Fan}_{n\mb{k}} = \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \sum_{m\nu} | g_{mn\nu}(\mb{k,q})|^2
-   \sum_{\pm} \frac{n_{\mb{q}\nu} + f_{m\mb{k}+\mb{q}}^\pm}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\mb{q}\nu} + i\eta},
+   \Sigma^{\rm Fan}_{n\mb{k}} = \!\int\! \frac{\mathrm{d}\mathbf{q}}{\Omega^{\mathrm{BZ}}} \sum_{m\nu} | g_{mn\nu}(\mb{k,q})|^2
+   \sum_{\pm} \frac{n_{\nu\mb{q}} + f_{m\mb{k}+\mb{q}}^\pm}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\nu\mb{q}} + i\eta},
 \end{equation}
-where $f_{m\mb{k}+\mb{q}}^+$ is the Fermi--Dirac occupation factor of the state with energy $\varepsilon_{m\mb{k}+\mb{q}}$, $f_{m\mb{k}+\mb{q}}^- = 1 - f_{m\mb{k}+\mb{q}}^+$, and $\eta$ a positive infinitesimal value (\texttt{degaussw}).
+where $f_{m\mb{k}+\mb{q}}^+$ is the Fermi--Dirac occupation factor of the state with energy $\varepsilon_{m\mb{k}+\mb{q}}$, $f_{m\mb{k}+\mb{q}}^- = 1 - f_{m\mb{k}+\mb{q}}^+$, $n_{\nu\mathbf{q}}$ is the Bose--Einstein occupation, and $\eta$ a positive infinitesimal value (\texttt{degaussw}).
+%
 This expression contains an infinite sum over bands $m$ which cannot be computed using Wannier interpolation of low-energy bands.
 
 
-To solve this problem, we use Wannier function perturbation theory (WFPT).
+To solve this problem, we use WFPT.
 We begin by splitting the Fan term into the low-energy active space contribution ($\Sigma^{\rm A-Fan}$) and the rest space contribution ($\Sigma^{\rm R-Fan}$) separated by the cutoff energy $E^{\rm A}$:
 \begin{align}
    \label{eq:fan_active}
    \Sigma^{\rm A-Fan}_{n\mb{k}}
-   &= \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} \leq E^{\rm A}}} \sum_{\nu} | g_{mn\nu}(\mb{k,q})|^2
-   \sum_{\pm} \frac{n_{\mb{q}\nu} + f_{m\mb{k}+\mb{q}}^\pm}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\mb{q}\nu} + i\eta},
+   &= \!\int\! \frac{\mathrm{d}\mathbf{q}}{\Omega^{\mathrm{BZ}}} \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} \leq E^{\rm A}}} \sum_{\nu} | g_{mn\nu}(\mb{k,q})|^2
+   \sum_{\pm} \frac{n_{\nu\mb{q}} + f_{m\mb{k}+\mb{q}}^\pm}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\nu\mb{q}} + i\eta} \,,
    \\
    \label{eq:fan_rest}
    \Sigma^{\rm R-Fan}_{n\mb{k}}
-   &= \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} > E^{\rm A}}} \sum_{\nu} | g_{mn\nu}(\mb{k,q})|^2
-   \frac{2n_{\mb{q}\nu} + 1}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\mb{q}\nu} + i\eta}.
+   &= \!\int\! \frac{\mathrm{d}\mathbf{q}}{\Omega^{\mathrm{BZ}}} \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} > E^{\rm A}}} \sum_{\nu} | g_{mn\nu}(\mb{k,q})|^2
+   \frac{2n_{\nu\mb{q}} + 1}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}} \pm \omega_{\nu\mb{q}} + i\eta} \,.
 \end{align}
-In Eq.~\eqref{eq:fan_rest}, we assumed that the cutoff energy is much higher than the Fermi level such that the electron occupation is always zero above the window.
-For states $n\mb{k}$ within the active space, $\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}}$ in the denominator of Eq.~\eqref{eq:fan_rest} is never zero.
+%
+In Eq.~\eqref{eq:fan_rest}, we assume that the cutoff energy is much higher than the Fermi level such that the electron occupation is always zero above the window.
+%
+For states $n\mb{k}$ within the rest space, the $(\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}})$ term in the denominator of Eq.~\eqref{eq:fan_rest} is never zero.
+%
 Assuming this electronic energy difference is much larger than the phonon frequency, we can drop the phonon frequency and approximate the rest term as
 \begin{equation} \label{eq:fan_rest_adia}
-   \Sigma^{\rm R-Fan}_{n\mb{k}} \approx \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \sum_{\nu} (2n_{\mb{q}\nu} + 1) \!\!\!\!
-   \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} > E^{\rm A}}} \frac{| g_{mn\nu}(\mb{k,q})|^2}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}}}.
+   \Sigma^{\rm R-Fan}_{n\mb{k}} \approx \!\int\! \frac{\mathrm{d}\mathbf{q}}{\Omega^{\mathrm{BZ}}} \sum_{\nu} (2n_{\nu\mb{q}} + 1) \!\!\!\!
+   \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} > E^{\rm A}}} \frac{| g_{mn\nu}(\mb{k,q})|^2}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}}} \,.
 \end{equation}
 In practice, $E^{\rm A}$ (\texttt{ahc\_win\_max}) is a convergence parameter that needs to be increased until the result is converged.
 Usually, 1~eV above the highest band of interest is sufficient.
@@ -110,17 +122,17 @@ Usually, 1~eV above the highest band of interest is sufficient.
 The infinite sum over the high-energy bands in Eq.~\eqref{eq:fan_rest_adia} can be rewritten as\footnote{X.\ Gonze \textit{et al}., \href{https://onlinelibrary.wiley.com/doi/10.1002/andp.201000100}{Ann. Phys. 523, 168 (2011)}}
 \begin{equation} \label{eq:sternheimer_mel}
    \sum_{m}^{\varepsilon_{m\mb{k}+\mb{q} > E^{\rm A}}} \frac{| g_{mn\nu}(\mb{k,q})|^2}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k}+\mb{q}}}
-   = \langle \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} | \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle,
+   = \langle \partial^{\rm R}_{\nu\mb{q}} u_{n\mb{k}} | \partial^{\rm R}_{\nu\mb{q}} u_{n\mb{k}} \rangle,
 \end{equation}
-where $| \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle$ is the first-order perturbation of the electron wavefunction projected onto the high-energy subspace, which can be computed by solving the Sternheimer equation
+where $| \partial^{\rm R}_{\nu\mb{q}} u_{n\mb{k}} \rangle$ is the first-order perturbation of the electron wavefunction projected onto the high-energy subspace, which can be computed by solving the Sternheimer equation
 \begin{equation} \label{eq:sternheimer}
-   (\varepsilon_{n\mb{k}} - \hat{H}_{\mb{k}+\mb{q}}) | \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle
-   =  \hat{P}^{\rm R}_{\mb{k+q}} \,  \partial_{\mb{q}\nu} \hat{V} | u_{n\mb{k}} \rangle.
+   (\varepsilon_{n\mb{k}} - \hat{H}_{\mb{k}+\mb{q}}) | \partial^{\rm R}_{\nu\mb{q}} u_{n\mb{k}} \rangle
+   =  \hat{P}^{\rm R}_{\mb{k+q}} \,  \partial_{\nu\mb{q}} \hat{V} | u_{n\mb{k}} \rangle.
 \end{equation}
 Here, $\hat{P}^{\rm R}_{\mb{k+q}}$ is the projector onto the high-energy bands.
 
 
-Using WFPT, the wavefunction perturbation $| \partial^{\rm R}_{\mb{q}\nu} u_{n\mb{k}} \rangle$ can be represented in terms of localized objects.
+Using WFPT, the wavefunction perturbation $| \partial^{\rm R}_{\nu\mb{q}} u_{n\mb{k}} \rangle$ can be represented in terms of localized objects.
 These objects are called ``Wannier function perturbations'', as they are the change of Wannier functions due to a phonon perturbation.
 Correspondingly, the matrix element on the right-hand side of \Eq{eq:sternheimer_mel} can be Wannier interpolated from a coarse $\mb{k}$-point grid to real space, and then to a dense $\mb{k}$-point grid.
 More information about WFPT can be found in the article \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.11.041053}{J.\ M.\ Lihm and C.\ H.\ Park, Phys. Rev. X \textbf{11}, 041053 (2021)}.
@@ -130,7 +142,7 @@ More information about WFPT can be found in the article \href{https://journals.a
 \vspace{0.5cm}
 The DW term comes from the first-order perturbative correction due to the quadratic electron-phonon coupling parameter $D_{n\nu}(\mb{k,q})$:
 \begin{equation}
-   \Sigma^{\rm DW}_{n\mb{k}} = \sum_{m\nu} \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \frac{n_{\mb{q}\nu} + 1/2}{2\omega_{\mb{q}\nu}} D_{n\nu}(\mb{k,q}).
+   \Sigma^{\rm DW}_{n\mb{k}} = \sum_{m\nu} \!\int\! \frac{\mathrm{d}\mathbf{q}}{\Omega^{\mathrm{BZ}}} \frac{n_{\nu\mb{q}} + 1/2}{2\omega_{\nu\mb{q}}} D_{n\nu}(\mb{k,q}).
 \end{equation}
 The $D_{n\nu}(\mb{k,q})$ term, which is called the DW matrix element, is defined as:
 \begin{equation}
@@ -138,7 +150,7 @@ The $D_{n\nu}(\mb{k,q})$ term, which is called the DW matrix element, is defined
    \langle u_{n\mb{k}} | \partial_{-\mb{q}\kappa\alpha} \partial_{\mb{q}\kappa'\alpha'} \hat{V} | u_{n\mb{k}} \rangle.
 \end{equation}
 This term cannot be directly evaluated within first-order DFPT because it involves the second derivative of the electronic potential with respect to atomic displacements.
-Using the rigid-ion approximation which neglects the cross-derivatives between different atoms, and exploiting the translational covariance of the electron potential, the DW matrix element can be expressed as\footnote{J.-M.\ Lihm and C.-H.\ Park, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.101.121102}{Phys.\ Rev.\ B \textbf{101}, 121102(R) (2020)}}
+Using the rigid-ion approximation (RIA) which neglects the cross-derivatives between different atoms, and exploiting the translational covariance of the electron potential, the DW matrix element can be expressed as\footnote{J.-M.\ Lihm and C.-H.\ Park, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.101.121102}{Phys.\ Rev.\ B \textbf{101}, 121102(R) (2020)}}
 \begin{equation}
    \langle u_{n\mb{k}} | \partial_{-\mb{q}\kappa\alpha} \partial_{\mb{q}\kappa'\alpha'} \hat{V} | u_{n\mb{k}} \rangle
    \stackrel{\rm RIA}{\approx}
@@ -149,7 +161,7 @@ Therefore, in the RIA, the DW self-energy takes the following explicit form:
 \begin{equation}
    \Sigma^{\rm DW}_{n\mb{k}}
    \stackrel{\rm RIA}{\approx}
-   \sum_{m\nu} \!\int\! \frac{d^3q}{\Omega_{\mathrm{BZ}}} \frac{n_{\mb{q}\nu} + 1/2}{2\omega_{\mb{q}\nu}}
+   \sum_{m\nu} \!\int\! \frac{\mathrm{d}\mathbf{q}}{\Omega^{\mathrm{BZ}}} \frac{n_{\nu\mb{q}} + 1/2}{2\omega_{\nu\mb{q}}}
    \sum_{\kappa\alpha\alpha'} e^*_{\kappa\alpha\nu}(\mb{q}) e_{\kappa\alpha'\nu}(\mb{q})
    \langle u_{n\mb{k}} | [\partial_{\mb{0}\kappa\alpha} \hat{V}, \hat{p}_{\alpha'}] | u_{n\mb{k}} \rangle\,.
 \end{equation}
@@ -167,8 +179,8 @@ First download the exercise files:
 \begin{scriptsize}
 \begin{verbatim}
 $ cd $SCRATCH
-$ cp /home1/08221/jmlihm/Thu.5.Lihm.tar .
-$ tar -xvf Thu.5.Lihm.tar
+$ wget --content-disposition "https://drive.google.com/uc?export=download&id=1sWEhq1maFYhADa4VkJetfs4N-AfZ5KGa"
+$ tar xvf Thu.5.Lihm.tar
 $ cd Thu.5.Lihm/exercise1/
 \end{verbatim}
 \end{scriptsize}
@@ -208,7 +220,9 @@ K_POINTS automatic
 \end{Verbatim}
 \end{scriptsize}
 \begin{footnotesize}
-   {\bf Note}: In practice the \textbf{k}-point grid needs to be fairly large in order to get converged dielectric function and Born effective charges during the following phonon calculation. (Here, the Born effective charges are 0 as diamond is infrared inactive.)
+   {\bf Note}: In practice the \textbf{k}-point grid needs to be fairly large in order to get converged dielectric function and Born effective charges during the following phonon calculation.
+   %
+   Here, the Born effective charges are 0 as diamond is infrared inactive.
 \end{footnotesize}
 
 \begin{verbatim}
@@ -271,9 +285,12 @@ matrices on the IBZ.
 % -----------------------------------------------------------------------------------------
 \subsection*{1.3 Interpolation of the electron-phonon matrix element in real-space with EPW}
 \vspace{0.5cm}
-\action Do a non self-consistent calculation on a 4x4x4 uniform and $\Gamma$-centered $\mb{k}$-point grid with crystal coordinates in the interval [0,1)
+\action Do a non self-consistent calculation on a 4x4x4 uniform and $\Gamma$-centered $\mb{k}$-point grid with crystal coordinates in the interval [0,1).
+
 
 Such a grid can be for example generated with the \texttt{wannier90} utility with \texttt{kmesh.pl 4 4 4}.
+%
+The \texttt{kmesh.pl} file is located at \texttt{\$PATHQE/external/wannier90/utility/kmesh.pl}.
 
 
 The \texttt{nscf.in} file is as follows:
@@ -312,15 +329,14 @@ K_POINTS crystal
 \end{scriptsize}
 
 \begin{verbatim}
-$ ibrun -n 8 $PATHQE/bin/pw.x -nk 4 -in nscf.in > nscf.out
+$ ibrun -n 48 $PATHQE/bin/pw.x -nk 8 -in nscf.in > nscf.out
 \end{verbatim}
 
 The reason for the non-self consistent calculation is that EPW needs the wavefunctions on the full BZ on a grid between 0 and 1.
 
 \vspace{0.5cm}
 \begin{footnotesize}
-   \textbf{Note 1}: Since we are interested in the band gap, we will need the conduction bands. Notice that we added the
-input \texttt{nbnd = 8} in \texttt{nscf.in}
+   \textbf{Note 1}: Since we are interested in the band gap, we will need the conduction bands. Notice that we added the input \texttt{nbnd = 8} in \texttt{nscf.in}.
 
    \textbf{Note 2}: We use \texttt{calculation  = `bands'} instead of \texttt{calculation  = `nscf'}. This is because the latter option may expand the set of $\mb{k}$-points according to the symmetry, while the former always computes the eigenenergies and wavefunctions for the given set of $\mb{k}$-points.
 \end{footnotesize}
@@ -328,7 +344,7 @@ input \texttt{nbnd = 8} in \texttt{nscf.in}
 
 % ------------------------------------------------
 \vspace{0.5cm}
-\action Compute the matrix elements for the DW and rest-space Fan self-energy on the coarse $\mb{k}$-point grid
+\action Compute the matrix elements for the DW and rest-space Fan self-energy on the coarse $\mb{k}$-point grid.
 
 For WFPT, we need matrix elements for the DW and rest-space Fan self-energy on the coarse $\mb{k}$-point grid.
 To compute these, we use the \texttt{electron\_phonon = `ahc'} option of the \program{ph.x} code.
@@ -371,7 +387,7 @@ There are four new input variables specific to the AHC calculation:
 
 
 \begin{verbatim}
-$ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ahc.in > ahc.out
+$ ibrun -n 48 $PATHQE/bin/ph.x -nk 8 -in ahc.in > ahc.out
 \end{verbatim}
 
 
@@ -442,7 +458,7 @@ $ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ahc.in > ahc.out
 \end{scriptsize}
 
 \begin{verbatim}
-$ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw.in > epw.out
+$ ibrun -n 48 $PATHQE/bin/epw.x -nk 48 -in epw.in > epw.out
 \end{verbatim}
 
 \begin{footnotesize}
@@ -451,7 +467,9 @@ $ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw.in > epw.out
    \item We set \texttt{etf\_mem = 0} to minimize the number of IO operations. For larger systems where memory becomes a concern, you can set \texttt{etf\_mem = 1}.
    \item \texttt{lopt\_w2b = .true.} enables the optimization of the Wannier interpolation that reduces a 3D Fourier transformation to a nested 1D Fourier transformation with cached intermediate results. This option can significantly improve performance \textit{without} compromising any accuracy when using homogeneous $\mb{q}$-point grids. See Eqs.~(8,9) of J.\ Kaye \textit{et al}., \href{https://scipost.org/SciPostPhys.15.2.062}{SciPost Phys. 15, 062 (2023)}.
    \item \texttt{lwfpt} enables WFPT.
-   \item \texttt{ahc\_nbnd} specifies the number of bands for which the Sternheimer matrix element is computed. This number should be the same as in the \texttt{ahc.in} file.
+   %
+   \item \texttt{ahc\_nbnd} specifies the number of bands for which the Sternheimer matrix element is computed. \textbf{This number must be the same as in the \texttt{ahc.in} file.}
+   %
    \item \texttt{ahc\_win\_min} and \texttt{ahc\_win\_max} specify the lower and upper boundaries of the active space.
    \item \texttt{elecselfen} asks for the electron self-energy to be computed.
    \item \texttt{degaussw = 0.02} specifies the smearing parameter $\eta$ in the units of eV.
@@ -545,7 +563,7 @@ One can find that the rest-space Fan and DW terms have large values with opposit
 \vspace{0.5cm}
 \action Re-run the code with multiple temperatures (using  \texttt{temps = 0.0 200 400 600 800 1000}).
 %
-You should remove the \texttt{restart.fmt} file before doing so.
+\textbf{You must remove the \texttt{restart.fmt} file before doing so.}
 
 \vspace{0.2cm}
 Try filling the table below for the band gap renormalization:
@@ -710,7 +728,7 @@ The calculation should take about \textbf{2 min on 4 cores}. During the run, not
 
 Finally, we need to post-process some of the data to make it ready for EPW.
 %
-To do so, we can use a python script (usually provided in \texttt{QE/EPW/bin/pp.py} but copied here for convenience).
+To do so, we can use a python script.
 
 \vspace{0.5cm}
 \action Run the python post-processing to create the \texttt{save} folder
@@ -1032,7 +1050,7 @@ The script will create two pdf files, \texttt{mgb2\_spectral.pdf} and \texttt{mg
 The upper panel shows the electron spectral function as the background color.
 The black and red curves show the bare and renormalized electron dispersion.
 
-The lower panel shows the electron occupation at each $\mb{k}$-point, which is the integral of the spectral function multiplied by the Fermi--Dirac function $f_{\rm FD}(\omega) = \frac{1}{e^{(\omega-\mu) / k_{\rm B} T}+1}$.
+The lower panel shows the electron occupation at each $\mb{k}$-point, which is the integral of the spectral function multiplied by the Fermi--Dirac function $f(\omega) = \frac{1}{e^{(\omega-\mu) / k_{\rm B} T}+1}$.
 This value changes when the dispersion crosses the Fermi level.
 
 Zooming in near the Fermi level, we can see the phonon induced renormalization of the electron dispersion: the red curve is the renormalized band structure, and the black curve is the bare band structure.
@@ -1063,12 +1081,14 @@ Using a denser 20$\times$20$\times$20 $\mb{q}$-point grid and 500 frequency poin
 In this example, we compute the electron spectral function of graphene from electron-phonon coupling and compare it with self-energy extracted from the ARPES spectrum done in the \href{https://xarpes.readthedocs.io/en/latest/notebooks/graphene.html}{xARPES tutorial}.
 %
 The formalism and workflow are identical to Exercise~2, so we focus on the practical differences specific to graphene.
+%
+Tomorrow, we will re-use graphene in the spectral transport hands-on to compute its optical conductivity.
 
 \vspace{0.2cm}
 
 Graphene is a semimetal with a linear Dirac dispersion at the $K$ point.
 %
-Coupling to the in-plane $E_{2g}$ optical phonon ($\hbar \omega_{\rm ph} \approx 200$~meV) produces a kink in the renormalized band structure roughly one phonon energy below the Fermi level\footnote{See, e.g., A.\ Bostwick \textit{et al.}, \href{https://www.nature.com/articles/nphys477}{Nature Phys.\ \textbf{3}, 36 (2007)} and references therein.}.
+Coupling to the in-plane $E_{2g}$ optical phonon ($\hbar \omega^{\rm ph} \approx 200$~meV) produces a kink in the renormalized band structure roughly one phonon energy below the Fermi level\footnote{See, e.g., A.\ Bostwick \textit{et al.}, \href{https://www.nature.com/articles/nphys477}{Nature Phys.\ \textbf{3}, 36 (2007)} and references therein.}.
 
 
 In the experiment of D.~Yu.~Usachov \textit{et al.}\footnote{D.~Yu.~Usachov \textit{et al.}, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.97.085132}{Phys.\ Rev.\ B \textbf{97}, 085132 (2018)}.}, the authors used Li adsorption to dope electrons into graphene, shifting the Fermi level upward by approximately $1.6$~eV, close to the van Hove singularity at the $M$ point.
@@ -1095,11 +1115,11 @@ $ ibrun -n 8 $PATHQE/bin/ph.x -nk 4 -in ahc.in > ahc.out
 $ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw1.in > epw1.out
 \end{verbatim}
 
-The input files follow the same patterns as in Exercise~2; the main differences are the 2D geometry (large out-of-plane lattice constant, $\mb{q}$-grid with \texttt{nq3 = 1}), a single carbon-$p_z$ Wannier function per atom for the low-energy bands, and a smaller frozen / disentanglement window centered around the Dirac point.
+The input files follow the same patterns as in Exercise~2; the main differences are the 2D geometry (large out-of-plane lattice constant, $\mb{q}$-grid with \texttt{nq3 = 1}, and \texttt{assume\_isolated = .true.}), a single carbon-$p_z$ Wannier function per atom for the low-energy bands, and a smaller frozen / disentanglement window centered around the Dirac point.
 
 \vspace{0.5cm}
 
-First, let us compute the electron spectral function for intrinsic graphene, with the Fermi level set at the Dirac point.
+First, we compute the electron spectral function for intrinsic graphene, with the Fermi level set at the Dirac point.
 
 \vspace{0.2cm}
 
@@ -1190,6 +1210,7 @@ The kink or the sudden change in the spectral function in the lower band along t
    \includegraphics[width=0.6\textwidth]{assets/graphene_spectral.pdf}
    \vspace{0.1cm}
 \end{center}
+\textbf{Figure 1}: Electron spectral function of intrinsic graphene. The dashed lines indicate the AHC active window. The kink in the spectral function near the M--K path is an artifact of the window truncation.
 
 
 \vspace{0.2cm}
@@ -1267,7 +1288,7 @@ $ python3 plot.py
 
 \vspace{0.3cm}
 
-Re-running \program{epw.x} and plotting by \program{plot\_dense.py}, the phonon-induced kink near $\hbar\omega_{\rm ph} \approx 200~\mathrm{meV}$ above and below the shifted $E_{\rm F}$ is now clearly visible in the \texttt{graphene\_spectral\_doped.pdf} file:
+Re-running \program{epw.x} and plotting by \program{plot\_dense.py}, the phonon-induced kink near $\hbar\omega^{\rm ph} \approx 200~\mathrm{meV}$ above and below the shifted $E_{\rm F}$ is now clearly visible in the \texttt{graphene\_spectral\_doped.pdf} file:
 \begin{center}
    \vspace{0.2cm}
    \includegraphics[width=0.6\textwidth]{assets/graphene_spectral_doped.pdf}
@@ -1283,9 +1304,9 @@ This is because there are static electron-phonon renormalization effects that ar
 %
 In the experiments, the bare band is not directly accessible and is extracted by fitting the high-energy part of the ARPES spectrum, which also includes the static renormalization effects.
 %
-In order to mimic this procedure, we manually shift the bare band down by about 40~meV to match the high-energy part of the spectral function, and plot it together with the renormalized band (red) in \texttt{graphene\_spectral\_doped\_shifted\_band.pdf}.
+In order to mimic this procedure, we manually shift the bare band down by 40~meV to match the high-energy part of the spectral function, and plot it together with the renormalized band (red) in \texttt{graphene\_spectral\_doped\_shifted\_band.pdf}.
 %
-We now see that the bare band aligns well with the spectral function at the Fermi level, and the velocity renormalization and kink appears approximately symmetric with respect to the Fermi level.
+We now see in the figure below that the bare band aligns well with the spectral function at the Fermi level, and the velocity renormalization and kink appears approximately symmetric with respect to the Fermi level.
 
 \begin{center}
    \vspace{0.2cm}
@@ -1304,7 +1325,7 @@ The velocity renormalization and kink are caused by the characteristic frequency
    \vspace{0.1cm}
 \end{center}
 
-We find a peak in the real part of the self-energy at $\hbar\omega_{\rm ph} \approx 200$~meV, and a corresponding step in the imaginary part of the self-energy at the same energy.
+We find a peak in the real part of the self-energy at $\hbar\omega^{\rm ph} \approx 200$~meV, and a corresponding step in the imaginary part of the self-energy at the same energy.
 
 \vspace{0.2cm}
 
@@ -1348,10 +1369,10 @@ We mostly highlight the specifics of phonon spectral function calculations and i
 
 The 1-loop (1L) contribution to the phonon self-energy is given by\footnote{M.\ Calandra \textit{et al}., \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.82.165111}{Phys.\ Rev.\ B \textbf{82}, 165111 (2010)}, J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}}
 \begin{equation} \label{eq:phself}
-   \Pi^{\rm 1L}_\qnu(\omega; T) = \frac{g_{\rm s}}{N_k} \sum_{mn\mb{k}} \frac{f_{n\mb{k}}(T) - f_{m\mb{k+q}}(T)}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k+q}} + \omega + i\eta} \lvert g_{mn\nu}(\mb{k}, \mb{q}) \rvert^2.
+   \Pi^{\rm 1L}_\nuq(\omega; T) = \frac{g_{\rm s}}{N_k} \sum_{mn\mb{k}} \frac{f_{n\mb{k}}(T) - f_{m\mb{k+q}}(T)}{\varepsilon_{n\mb{k}} - \varepsilon_{m\mb{k+q}} + \omega + i\eta} \lvert g_{mn\nu}(\mb{k}, \mb{q}) \rvert^2.
 \end{equation}
 Here, $g_{\rm s}$ is the spin degeneracy factor.
-In principle, the self-energy $\Pi^{\rm 1L}_{\mb{q}\mu\nu}(\omega; T)$ also has off-diagonal terms that couple different phonon modes and change the phonon eigenmodes\footnote{J.\ Berges \textit{et al}., \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.101.155107}{Phys. Rev. B \textbf{101}, 155107 (2020)}, see Fig.~2(c).}, but we neglect them here: $\Pi^{\rm 1L}_{\mb{q}\mu\nu} \stackrel{\Delta}{=} \Pi^{\rm 1L}_{\mb{q}\nu} \delta_{\mu \nu}$.
+In principle, the self-energy $\Pi^{\rm 1L}_{\mb{q}\mu\nu}(\omega; T)$ also has off-diagonal terms that couple different phonon modes and change the phonon eigenmodes\footnote{J.\ Berges \textit{et al}., \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.101.155107}{Phys. Rev. B \textbf{101}, 155107 (2020)}, see Fig.~2(c).}, but we neglect them here: $\Pi^{\rm 1L}_{\mb{q}\mu\nu} \stackrel{\Delta}{=} \Pi^{\rm 1L}_{\nu\mb{q}} \delta_{\mu \nu}$.
 Calculation of the off-diagonal self-energy will be made available in the EPW code in the near future.
 
 \vspace{0.2cm}
@@ -1360,15 +1381,15 @@ Since the DFPT calculation already includes static screening, we have to subtrac
 Also, in this ``unscreening'' process, we have to take into account that the DFPT calculation is done usually at a high temperature (e.g., $T^{\rm high} = 8000$~K) and the phonon self-energy is calculated at a lower temperature (e.g., $T^{\rm low} = 300$~K).
 Hence, we subtract the static self-energy at $T^{\rm high}$, and then add the dynamical self-energy at $T^{\rm low}$:
 \begin{equation} \label{eq:phself_unscreening}
-   \Delta \Pi_\qnu(\omega; T^{\rm low}) = \Pi^{\rm 1L}_\qnu(\omega; T^{\rm low}) - \Pi^{\rm 1L}_\qnu(0; T^{\rm high})
+   \Delta \Pi_\nuq(\omega; T^{\rm low}) = \Pi^{\rm 1L}_\nuq(\omega; T^{\rm low}) - \Pi^{\rm 1L}_\nuq(0; T^{\rm high}) \,.
 \end{equation}
 More information about the phonon self-energy and the unscreening procedure can be found in the article J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}.
 
 \vspace{0.2cm}
 
-The phonon spectral function reads\footnote{P.\ B.\ Allen and R.\ Silberglitt, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.9.4733}{Phys.\ Rev.\ B \textbf{9}, 4733 (1974)}. See also Eqs.~(2,3) of J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}. We have an additional $2\omega_\qnu$ factor multiplied to the self-energy because of the difference in the definition of the electron-phonon matrix element $g_{mn\nu}(\mb{k}, \mb{q})$. Compare Eq.~(2) of F.\ Giustino, \href{https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.89.015003}{Rev. Mod. Phys. \textbf{89}, 015003 (2017)} and Eq.~(12) of J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}.}
+The phonon spectral function reads\footnote{P.\ B.\ Allen and R.\ Silberglitt, \href{https://journals.aps.org/prb/abstract/10.1103/PhysRevB.9.4733}{Phys.\ Rev.\ B \textbf{9}, 4733 (1974)}. See also Eqs.~(2,3) of J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}. We have an additional $2\omega_\nuq$ factor multiplied to the self-energy because of the difference in the definition of the electron-phonon matrix element $g_{mn\nu}(\mb{k}, \mb{q})$. Compare Eq.~(2) of F.\ Giustino, \href{https://journals.aps.org/rmp/abstract/10.1103/RevModPhys.89.015003}{Rev. Mod. Phys. \textbf{89}, 015003 (2017)} and Eq.~(12) of J.\ Berges \textit{et al}., \href{https://journals.aps.org/prx/abstract/10.1103/PhysRevX.13.041009}{Phys. Rev. X \textbf{13}, 041009 (2023)}.}
 \begin{equation} \label{eq:phspec}
-   B_{\mb{q}}(\omega; T) = -\frac{2\omega}{\pi} \sum_{\nu} \mathrm{Im} \frac{1}{(\omega + i\eta)^2 - \omega_\qnu^2 - 2\omega_\qnu \, \Delta \Pi_\qnu(\omega; T)}
+   B_{\mb{q}}(\omega; T) = -\frac{2\omega}{\pi} \sum_{\nu} \mathrm{Im} \frac{1}{(\omega + i\eta)^2 - \omega_\nuq^2 - 2\omega_\nuq \, \Delta \Pi_\nuq(\omega; T)}
 \end{equation}
 
 \vspace{0.2cm}
@@ -1424,7 +1445,7 @@ $ ibrun -n 8 $PATHQE/bin/epw.x -nk 8 -in epw2.in > epw2.out
   wmax_specfun = 0.12 ! eV
   nw_specfun   = 200
   degaussw   = 0.05   ! eV
-  temps      = 300.0  ! Kelvin (T_low only; T_high is set automatically)
+  temps      = 300.0  ! Kelvin (T_low only; T_high is set automatically from pw.x output file mgb2.xml)
   ! ------------------------------------------------------
 
   nbndsub     =  5
@@ -1449,9 +1470,9 @@ Since EPW v6.0 (released August 2025), the phonon self-energy at the high temper
 %
 For example, here the \texttt{scf.in} uses Methfessel--Paxton smearing (\texttt{smearing = `mp'}) with \texttt{degauss}=0.05~Ry.
 %
-The same smearing is reused internally for $\Pi^{\rm 1L}_\qnu(0; T^{\rm high})$.
+The same smearing is reused internally for $\Pi^{\rm 1L}_\nuq(0; T^{\rm high})$.
 %
-The user therefore only has to specify the low temperatures in the EPW \texttt{temps} input.
+The user therefore only has to specify the low temperatures in the EPW \texttt{temps} input, which corresponds to the physical temperature with a Fermi--Dirac occupation function.
 
 \vspace{0.2cm}
 
@@ -1489,17 +1510,17 @@ Each row corresponds to a $(\mb{q}, \nu, \omega)$ triplet:
 \begin{itemize}
    \item Column~3 (\texttt{Temp.[K]}) is the low temperature $T^{\rm low}$ specified in \texttt{temps}.
    \item Column~4 (\texttt{smearing[eV]}) is the smearing $\eta$ used in the self-energy (i.e., \texttt{degaussw} in eV).
-   \item Column~5 (\texttt{w\_q[eV]}) is the bare DFPT phonon eigenenergy $\omega_\qnu$.
+   \item Column~5 (\texttt{w\_q[eV]}) is the bare DFPT phonon eigenenergy $\omega_\nuq$.
    \item Column~6 (\texttt{w[eV]}) is the frequency $\omega$ on the user-defined grid.
    \item Column~7 contains the real part of the dynamical low-temperature self-energy
-         $\mathrm{Re}\,\Pi^{\rm 1L}_\qnu(\omega; T^{\rm low})$.
+         $\mathrm{Re}\,\Pi^{\rm 1L}_\nuq(\omega; T^{\rm low})$.
    \item Column~8 contains the real part of the static high-temperature self-energy
-         $\mathrm{Re}\,\Pi^{\rm 1L}_\qnu(0; T^{\rm high})$, computed automatically with the SCF smearing.
+         $\mathrm{Re}\,\Pi^{\rm 1L}_\nuq(0; T^{\rm high})$, computed automatically with the SCF smearing.
    \item Column~9 contains the imaginary part of the dynamical low-temperature self-energy
-         $\mathrm{Im}\,\Pi^{\rm 1L}_\qnu(\omega; T^{\rm low})$.
+         $\mathrm{Im}\,\Pi^{\rm 1L}_\nuq(\omega; T^{\rm low})$.
 \end{itemize}
 \end{footnotesize}
-The unscreened self-energy entering Eq.~\eqref{eq:phspec} is then $\Delta\Pi_\qnu(\omega; T^{\rm low}) = (\mathrm{col.~7} - \mathrm{col.~8}) + i\, \mathrm{col.~9}$.
+The unscreened self-energy entering Eq.~\eqref{eq:phspec} is then $\Delta\Pi_\nuq(\omega; T^{\rm low}) = (\mathrm{col.~7} - \mathrm{col.~8}) + i\, \mathrm{col.~9}$.
 
 
 \vspace{0.2cm}
