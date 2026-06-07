@@ -3,6 +3,7 @@ PDF     := $(NAME).pdf
 TAR     := $(NAME).tar
 SRC_PDF := document/main.pdf
 SRC_DIR := code
+CODE_FILES := $(shell find $(SRC_DIR) -type f)
 
 GDRIVE_REMOTE    := gdrive_EPW2026:
 # GDRIVE_FOLDER_ID is set in Makefile.local (gitignored).
@@ -26,7 +27,7 @@ $(SRC_PDF): document/main.tex document/settings.tex
 
 tar: $(TAR)
 
-$(TAR):
+$(TAR): $(CODE_FILES)
 	ln -sfn $(SRC_DIR) $(NAME)
 	COPYFILE_DISABLE=1 tar --no-xattrs --exclude='.DS_Store' -chf $(TAR) $(NAME)
 	rm -f $(NAME)
