@@ -66,7 +66,8 @@ for iq in range(nq):
 
 B[B < 0] = 1e-10
 
-fig, axes = plt.subplots(2, 2, figsize=(10, 6), sharex="col", gridspec_kw={'height_ratios': [3, 1], "width_ratios":[1,0.02]})
+fig, axes = plt.subplots(2, 2, figsize=(10, 6), sharex="col",
+    gridspec_kw={'height_ratios': [3, 1], "width_ratios": [1, 0.02]})
 axes[1, 1].set_axis_off()
 
 # -------------------------------------
@@ -82,8 +83,10 @@ cbar.set_label("$B_{\mathbf{q}}(\omega)$ (1/meV)")
 
 # Plot bands
 for i in range(nmodes):
-    plt.plot(xs, w_ph[:, i], "--", c="gray", lw=1, label=f"DFPT smearing 0.05 Ry" if i == 0 else None)
-    plt.plot(xs, w_ph_low[:, i], "-", c="b", lw=1, label=f"EPW T={T_low:.0f} K" if i == 0 else None)
+    plt.plot(xs, w_ph[:, i], "--", c="gray", lw=1,
+             label="DFPT smearing 0.05 Ry" if i == 0 else None)
+    plt.plot(xs, w_ph_low[:, i], "-", c="b", lw=1,
+             label=f"EPW T={T_low:.0f} K" if i == 0 else None)
 plt.legend(framealpha=1.0, loc="upper center", ncol=2)
 
 plt.axhline(0, c="grey", lw=1)

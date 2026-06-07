@@ -76,7 +76,8 @@ xks, _, sigma_ahc = parse_epw_selfen("epw2.out", nk, nbnd)
 
 
 # -------------------------------------
-# Compute spectral function on a denser frequency grid using linear interpolation of the self-energy
+# Compute spectral function on a denser frequency grid using
+# linear interpolation of the self-energy
 # A = 1 / (w - e - sigma)
 ws_itp = np.linspace(ws.min(), ws.max(), 10_000, True)
 dw = ws_itp[1] - ws_itp[0]

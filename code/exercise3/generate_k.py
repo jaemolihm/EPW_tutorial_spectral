@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate kpt_near_K.txt sampling along Γ-K between alpha1*K and alpha2*K,
+"""Generate kpt_near_K.txt sampling along Gamma-K between alpha1*K and alpha2*K,
 where K = [1/3, 1/3, 0] in crystal coordinates.
 
 Usage: ./generate_k.py alpha1 alpha2 [N]

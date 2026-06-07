@@ -120,7 +120,7 @@ ax.set_xlim([alphas[0], alphas[-1]])
 ax.set_ylim([PLOT_EMIN, PLOT_EMAX])
 ax.legend(fontsize=9, loc="upper right")
 # Find k-point along the dense segment whose band energy is closest to E_F
-# (used below for the Σ(ω) plot). Mark it and its immediate neighbors here.
+# (used below for the Sigma(omega) plot). Mark it and its immediate neighbors here.
 abs_e = np.abs(es)
 ib_star, ik_star = np.unravel_index(np.argmin(abs_e), abs_e.shape)
 ik_list = [ik_star]
@@ -136,7 +136,7 @@ print("Saved figure to graphene_spectral_doped.pdf")
 
 # -------------------------------------
 # Same spectral-function plot, but with DFT band shifted by E_SHIFT and the
-# red line built from Re Σ(ω) interpolated to the shifted band energy at each k.
+# red line built from Re Sigma(omega) interpolated to the shifted band energy at each k.
 es_shifted = es + E_SHIFT
 re_sigma_at_shifted = np.zeros_like(es_shifted)
 for ib in range(nbnd):
@@ -155,7 +155,8 @@ cbar3 = plt.colorbar(im3, ax=ax3)
 cbar3.set_label(r"$A_{\mathbf{k}}(\omega)$ (1/eV)")
 
 shift_meV = E_SHIFT * 1000
-black_label_shifted = (r"$\varepsilon_{n\mathbf{k}}^{\rm DFT}" + f" {shift_meV:+.0f}" + r"\,\mathrm{meV}$")
+black_label_shifted = (r"$\varepsilon_{n\mathbf{k}}^{\rm DFT}"
+                       + f" {shift_meV:+.0f}" + r"\,\mathrm{meV}$")
 red_label_shifted = (r"$\varepsilon_{n\mathbf{k}}^{\rm DFT} + \mathrm{Re}\,"
                     r"\Sigma_{n\mathbf{k}}(\omega = \varepsilon_{n\mathbf{k}}^{\rm DFT} "
                     + f"{shift_meV:+.0f}" + r"\,\mathrm{meV})$")
@@ -181,7 +182,7 @@ fig3.savefig("graphene_spectral_doped_shifted_band.pdf")
 print("Saved figure to graphene_spectral_doped_shifted_band.pdf")
 
 # -------------------------------------
-# Plot Σ(ω) at the band ib_star, for ik_star and its two neighbors.
+# Plot Sigma(omega) at the band ib_star, for ik_star and its two neighbors.
 fig2, axes2 = plt.subplots(1, 2, figsize=(10, 4), sharex=True)
 for ik, c in zip(ik_list, colors):
     label = (f"k={alphas[ik]:.3f}K, "
