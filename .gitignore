@@ -39,6 +39,7 @@ document/main.pdf
 # Makefile artifacts (handout copy + code tarball produced by `make`)
 Thu.5.Lihm.pdf
 Thu.5.Lihm.tar
+Thu.5.Lihm.tex.tar
 
 # Local overrides for Makefile (contains GDRIVE_FOLDER_ID; not for sharing)
 Makefile.local
